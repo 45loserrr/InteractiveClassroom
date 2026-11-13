@@ -1,0 +1,33 @@
+# ============================================================
+# 本地个人配置模板（不要直接改这个文件，也不要提交副本）
+#
+# 用法：
+#   1. 复制为 application-local.yml（该文件已被 .gitignore 忽略）
+#   2. 填入自己电脑上的 MySQL 密码
+#   3. 启动时激活 local profile：
+#        java -jar target/classroom-0.1.0.jar --spring.profiles.active=local
+#      或在 IDEA 的 Active profiles 里填 local
+#
+# 为什么要单独一份：main 分支的 application.yml 必须能"开箱即跑"，
+# 真实密码只存在于每个人本机，永不进仓库。
+# ============================================================
+
+spring:
+  datasource:
+    username: root
+    # 改成你本机 MySQL 的密码
+    password: 123456
+    url: jdbc:mysql://localhost:3306/classroom?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+
+# JWT 配置（M3 实现鉴权时启用；生产/演示环境务必换掉默认值）
+jwt:
+  # 至少 32 字符的随机串，可以用 `openssl rand -base64 32` 生成
+  secret: please-change-me-to-a-random-32-bytes-string
+  # Token 有效期（小时）
+  expire-hours: 12
+
+# 本地开发时把日志打详细一点，方便排查
+logging:
+  level:
+    com.classroom: debug
+    org.springframework.web: info

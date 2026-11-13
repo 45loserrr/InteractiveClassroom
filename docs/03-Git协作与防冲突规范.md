@@ -109,6 +109,19 @@ cd backend && mvn -q -DskipTests package
 cd frontend/teacher && npm run build
 ```
 
+### 3.1 换行符与编码（减少"整文件 diff"噪音）
+
+仓库已通过 `.gitattributes` + `.editorconfig` 统一：文本文件**以 LF 存储**，Windows 用到时按 `.bat/.cmd` 例外处理。
+
+| 你会看到 | 含义 | 要不要管 |
+| :--- | :--- | :--- |
+| `warning: LF will be replaced by CRLF` | Git 只是提示工作区会转 CRLF，提交内容仍是 LF | **不用管**，属正常 |
+| 一个只改了一行的文件显示几百行 diff | 编辑器把 LF 存成了 CRLF | 让编辑器遵循 `.editorconfig`（VS Code 装 EditorConfig 插件），或 `git add --renormalize .` |
+| 中文注释变乱码 | 文件被存成 GBK | 文件编码统一为 **UTF-8**（无 BOM） |
+
+**提交前确认**：`git diff --stat` 里不应该出现"我只改了一行却显示 +300 −300"的文件。
+
+
 ---
 
 ## 四、常见事故与处置

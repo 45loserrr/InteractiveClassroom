@@ -20,8 +20,11 @@
 
 ```
 移动互动课堂系统/
-├─ docs/                 # 项目管理与接口文档
-├─ backend/              # Spring Boot 后端 API + WebSocket 服务
+├─ .github/              # PR 模板、Issue 模板（提 PR 前照着填）
+├─ .editorconfig         # 统一缩进/编码/换行（先装编辑器插件）
+├─ .gitattributes        # 换行符与二进制文件的 Git 策略
+├─ docs/                 # 项目管理与接口、设计文档
+├─ backend/              # Spring Boot 后端 API + WebSocket 服务（含 mvnw 包装器）
 ├─ frontend/
 │  ├─ teacher/           # 教师端（Vue3 + Vite + TS，可打 Electron exe）
 │  ├─ student/           # 学生端（Vue3，可打 Capacitor APK）
@@ -29,6 +32,8 @@
 ├─ .gitignore
 └─ README.md
 ```
+
+> 各模块有自己的 README：`backend/README.md`（接口实现规范）、`frontend/README.md`（三端约定）、`frontend/teacher/README.md`（目录与接口调用方式）。
 
 ---
 

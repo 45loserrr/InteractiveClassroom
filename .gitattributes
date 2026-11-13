@@ -1,0 +1,34 @@
+# 统一换行符策略（与 .editorconfig 配套）
+#
+# 目的：
+#   1. 仓库内文本文件一律以 LF 存储，Windows 检出时由 Git 按规则转换；
+#   2. 避免"改了一行却整文件 diff"和 `LF will be replaced by CRLF` 告警刷屏；
+#   3. 明确二进制文件，防止 Git 误做文本合并。
+
+* text=auto eol=lf
+
+# Windows 脚本必须保留 CRLF，否则 cmd 解析异常
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# 明确的二进制类型
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.jar binary
+*.zip binary
+*.7z binary
+*.exe binary
+*.apk binary
+*.pdf binary
+
+# 语言级 diff 提示
+*.java diff=java
+*.md diff=markdown
+*.sql linguist-language=SQL
