@@ -198,6 +198,8 @@ import com.classroom.mapper.CheckinMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequestMapping("/api/checkin")
 public class CheckinController {
@@ -209,6 +211,7 @@ public class CheckinController {
     public Result add(@RequestBody Checkin checkin) {
         // 简单校验：同一节课不能重复签到
         // 这里先省略，M1 自己补
+        checkin.setCreateTime(LocalDateTime.now());
         checkinMapper.insert(checkin);
         return Result.ok("签到成功", checkin);
     }
@@ -223,6 +226,7 @@ package com.classroom.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -234,9 +238,13 @@ public class Checkin {
     private Long id;
     private Long classroomId;
     private Long studentId;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createTime;   // 数据库是 datetime
 }
 ```
+
+> 时间字段用 `LocalDateTime` 时，记得加 `@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")`，
+> 这样返回给前端的格式就是契约里的 `2026-11-19 18:30:00`。
 
 Mapper：
 
