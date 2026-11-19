@@ -140,7 +140,7 @@ mvn spring-boot:run
 - 登录、注册、UUID Token、登录拦截器；
 - 公共样式 `css/common.css`、公共 JS `js/common.js`（`myFetch`、`checkLogin`、`fillUser`、`logout`）；
 - 登录页 `index.html`、注册页 `register.html`；
-- 6 个组员页面的**界面骨架和 TODO 注释**（按钮目前点了会提示“接口还没写”，这是正常的）；
+- 6 个组员页面的**界面骨架和 TODO 注释**（按钮目前点了会提示“功能还在开发中”，这是正常的）；
 - 接口契约 `docs/API_CONTRACT.md`、README、Git 仓库。
 
 ### M1 要改哪里（签到）

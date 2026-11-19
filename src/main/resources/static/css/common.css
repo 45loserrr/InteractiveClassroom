@@ -261,32 +261,3 @@ textarea.input {
   font-size: 13px;
   text-align: center;
 }
-
-.demo-accounts {
-  margin-top: 14px;
-  padding: 9px 10px;
-  background: #f7f7f7;
-  border-radius: 4px;
-  color: #777;
-  font-size: 12px;
-  line-height: 1.8;
-}
-
-/* 组员 TODO 提示 */
-.todo-box {
-  margin-top: 14px;
-  padding: 12px;
-  border: 1px dashed #b9cff0;
-  background: #f5f9ff;
-  border-radius: 4px;
-  color: #1a4f9c;
-  font-size: 13px;
-  line-height: 1.8;
-}
-
-.todo-box code {
-  padding: 1px 4px;
-  background: #e8f0fe;
-  border-radius: 3px;
-  font-family: Consolas, monospace;
-}
