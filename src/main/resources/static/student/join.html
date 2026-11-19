@@ -8,57 +8,14 @@
 </head>
 <body>
 
-<div class="navbar">
-  <div class="brand">移动互动课堂 · 学生端</div>
-  <div class="links">
-    <a href="/student/" class="active">签到</a>
-    <a href="/student/answer.html">答题</a>
-    <a href="/screen/" target="_blank">大屏</a>
-    <span class="user" id="userName"></span>
-    <a href="javascript:logout()">退出</a>
-  </div>
-</div>
-
 <div class="container">
-  <h1 class="page-title">课堂签到</h1>
-  <p class="page-desc">输入老师给的课堂口令签到。</p>
-
-  <div class="card">
-    <div class="form-row">
-      <label for="courseCode">课堂口令</label>
-      <input class="input" id="courseCode" type="text" placeholder="比如：A1B2C3">
-    </div>
-
-    <button class="btn btn-primary" onclick="joinClass()">签到</button>
-    <div id="result" class="notice" style="margin-top: 14px;">还没有签到</div>
-  </div>
+  <h1 class="page-title">学生端 · 签到</h1>
+  <p class="page-desc">页面还没开始做。</p>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
-  var user = checkLogin('student');
-  if (user) {
-    fillUser();
-  }
-
-  async function joinClass() {
-    var code = document.getElementById('courseCode').value.trim().toUpperCase();
-    if (!code) {
-      alert('先输课堂口令');
-      return;
-    }
-
-    // TODO(M1): 先按口令查课堂，再签到
-    // var classroomRes = await myFetch('/api/classroom/byCode?code=' + code, 'GET');
-    // var res = await myFetch('/api/checkin', 'POST', {
-    //   classroomId: classroomRes.data.id,
-    //   studentId: user.userId
-    // });
-    // localStorage.setItem('classroomId', classroomRes.data.id);
-    // document.getElementById('result').innerText = '签到成功';
-
-    alert('签到功能还在开发中');
-  }
+  checkLogin('student');
 </script>
 
 </body>

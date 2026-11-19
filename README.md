@@ -140,39 +140,39 @@ mvn spring-boot:run
 - 登录、注册、UUID Token、登录拦截器；
 - 公共样式 `css/common.css`、公共 JS `js/common.js`（`myFetch`、`checkLogin`、`fillUser`、`logout`）；
 - 登录页 `index.html`、注册页 `register.html`；
-- 6 个组员页面的**界面骨架和 TODO 注释**（按钮目前点了会提示“功能还在开发中”，这是正常的）；
+- 6 个组员页面只留了空白占位页（标题 + 登录校验），业务界面和接口由组员自己写；
 - 接口契约 `docs/API_CONTRACT.md`、README、Git 仓库。
 
 ### M1 要改哪里（签到）
 
-- 前端：只改 `static/student/join.html` 里的 `joinClass()`，把 TODO 换成两次 `myFetch` 调用。
+- 前端：`static/student/join.html` 现在是空白页，签到界面和请求逻辑由你写。
 - 后端：新建 `CheckinController`、`Checkin`、`CheckinMapper`。
 - 需要的接口：`GET /api/classroom/byCode?code=xxx`（找 M2 要）、`POST /api/checkin`。
 - 签到成功后请执行 `localStorage.setItem('classroomId', 课堂id)`，M4 的答题页要用。
 
 ### M2 要改哪里（建课 / 发题）
 
-- 前端：`static/teacher/home.html` 的 `createClassroom()`，`static/teacher/publish.html` 的 `publishExercise()`。
+- 前端：`static/teacher/home.html`、`static/teacher/publish.html` 现在是空白页，两个界面由你写。
 - 后端：新建 `ClassroomController`、`ExerciseController` 和对应实体、Mapper。
 - 需要的接口：`POST /api/classroom`（建课，生成 6 位口令）、`GET /api/classroom/byCode`（给 M1 用）、`POST /api/exercise`（发题）。
 - 建课返回的 `code` 就是课堂口令，格式建议 6 位大写字母/数字。
 
 ### M3 要改哪里（数据导出）
 
-- 前端：只改 `static/report/index.html` 的 `exportReport()`，用 `fetch` + `blob` 下载，不要用 `<a href>`（带不了 token）。
+- 前端：`static/report/index.html` 现在是空白页，导出按钮和下载逻辑由你写。
 - 后端：新建 `ReportController`，返回 CSV，不要返回 JSON。
 - CSV 列顺序固定：`账号,姓名,签到时间,题目,选择,是否正确`，开头加 UTF-8 BOM。
 
 ### M4 要改哪里（答题）
 
-- 前端：只改 `static/student/answer.html` 的 `loadExercise()` 和 `submitAnswer()`。
+- 前端：`static/student/answer.html` 现在是空白页，答题界面由你写。
 - 后端：新建 `AnswerController`、`Answer`、`AnswerMapper`。
 - 需要的接口：`GET /api/exercise/list?classroomId=1`（找 M2 要）、`POST /api/answer`。
 - 判对错必须由后端查 `exercise.answer` 判断，不能信前端。
 
 ### M5 要改哪里（大屏）
 
-- 前端：只改 `static/screen/index.html` 的 `refreshStats()`，然后把文件末尾的 `setInterval` 注释打开。
+- 前端：`static/screen/index.html` 现在是空白页，大屏界面由你写。
 - 后端：新建 `ScreenController`，写 `GET /api/screen/stats?classroomId=1`。
 - 返回字段看 `docs/API_CONTRACT.md` 第 4.11 节，`optionCount` 的 A/B/C/D 四个键都要有，没人选就是 0。
 
@@ -193,6 +193,20 @@ mvn spring-boot:run
 
 - 老师 → `/teacher/`
 - 学生 → `/student/`
+
+### 组员发代码顺序
+
+建议按这个顺序交，别一起堆到最后：
+
+1. PM：框架 + 登录注册（已完成，大家先 `git pull` 拉下来）
+2. M2：建课 + 发题（课堂和题目接口，后面所有人都要用）
+3. M1：签到（用 M2 的课堂 id）
+4. M4：答题（用 M2 的题目 id）
+5. M5：大屏（用 M1 的签到数据 + M4 的答题数据）
+6. M3：报表（最后做，数据齐了再导）
+
+M2 如果写得慢，可以先只交建课，让 M1 先联调；发题交完再让 M4 做。
+每一步写完先本地跑通，再 `git pull`、`commit`、`push`，然后在群里说一声。
 
 ## 五、组员写后端的模板
 

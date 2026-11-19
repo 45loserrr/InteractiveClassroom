@@ -8,56 +8,14 @@
 </head>
 <body>
 
-<div class="navbar">
-  <div class="brand">移动互动课堂 · 教师端</div>
-  <div class="links">
-    <a href="/teacher/" class="active">建课</a>
-    <a href="/teacher/publish.html">发题</a>
-    <a href="/screen/" target="_blank">大屏</a>
-    <a href="/report/">数据导出</a>
-    <span class="user" id="userName"></span>
-    <a href="javascript:logout()">退出</a>
-  </div>
-</div>
-
 <div class="container">
-  <h1 class="page-title">创建课堂</h1>
-  <p class="page-desc">填个课程名，生成课堂口令，学生用它签到。</p>
-
-  <div class="card">
-    <div class="form-row">
-      <label for="className">课程名称</label>
-      <input class="input" id="className" type="text" placeholder="比如：软件工程">
-    </div>
-
-    <button class="btn btn-primary" onclick="createClassroom()">创建课堂</button>
-    <div id="result" class="notice" style="margin-top: 14px;">还没有创建课堂</div>
-  </div>
+  <h1 class="page-title">教师端 · 建课</h1>
+  <p class="page-desc">页面还没开始做。</p>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
-  var user = checkLogin('teacher');
-  if (user) {
-    fillUser();
-  }
-
-  async function createClassroom() {
-    var name = document.getElementById('className').value.trim();
-    if (!name) {
-      alert('课程名不能为空');
-      return;
-    }
-
-    // TODO(M2): 调接口建课
-    // var res = await myFetch('/api/classroom', 'POST', {
-    //   name: name,
-    //   teacherId: user.userId
-    // });
-    // document.getElementById('result').innerText = '课堂口令：' + res.data.code;
-
-    alert('建课功能还在开发中');
-  }
+  checkLogin('teacher');
 </script>
 
 </body>

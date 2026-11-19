@@ -8,79 +8,14 @@
 </head>
 <body>
 
-<div class="navbar">
-  <div class="brand">移动互动课堂 · 教师端</div>
-  <div class="links">
-    <a href="/teacher/">建课</a>
-    <a href="/teacher/publish.html">发题</a>
-    <a href="/screen/" target="_blank">大屏</a>
-    <a href="/report/" class="active">数据导出</a>
-    <span class="user" id="userName"></span>
-    <a href="javascript:logout()">退出</a>
-  </div>
-</div>
-
 <div class="container">
   <h1 class="page-title">数据导出</h1>
-  <p class="page-desc">按课堂导出 CSV，Excel 直接打开。</p>
-
-  <div class="card">
-    <div class="form-row">
-      <label for="classroomId">课堂 ID</label>
-      <input class="input" id="classroomId" type="number" placeholder="比如：1">
-    </div>
-
-    <button class="btn btn-primary" onclick="exportReport()">导出 CSV</button>
-  </div>
-
-  <div class="card">
-    <h2>数据预览</h2>
-    <table class="table">
-      <thead>
-      <tr>
-        <th>账号</th>
-        <th>姓名</th>
-        <th>签到时间</th>
-        <th>题目</th>
-        <th>选择</th>
-        <th>是否正确</th>
-      </tr>
-      </thead>
-      <tbody id="tbody">
-      <tr>
-        <td colspan="6" class="muted">导出后 Excel 里就是这几列</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+  <p class="page-desc">页面还没开始做。</p>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
-  var user = checkLogin('teacher');
-  if (user) {
-    fillUser();
-  }
-
-  async function exportReport() {
-    var classroomId = Number(document.getElementById('classroomId').value);
-    if (!classroomId) {
-      alert('先填课堂 ID');
-      return;
-    }
-
-    // TODO(M3): 下载 CSV
-    // var res = await fetch('/api/report/export?classroomId=' + classroomId, {
-    //   headers: { token: localStorage.getItem('token') }
-    // });
-    // var blob = await res.blob();
-    // var a = document.createElement('a');
-    // a.href = URL.createObjectURL(blob);
-    // a.download = 'report.csv';
-    // a.click();
-
-    alert('导出功能还在开发中');
-  }
+  checkLogin('teacher');
 </script>
 
 </body>

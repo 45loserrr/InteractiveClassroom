@@ -8,102 +8,14 @@
 </head>
 <body>
 
-<div class="navbar">
-  <div class="brand">移动互动课堂 · 教师端</div>
-  <div class="links">
-    <a href="/teacher/">建课</a>
-    <a href="/teacher/publish.html" class="active">发题</a>
-    <a href="/screen/" target="_blank">大屏</a>
-    <a href="/report/">数据导出</a>
-    <span class="user" id="userName"></span>
-    <a href="javascript:logout()">退出</a>
-  </div>
-</div>
-
 <div class="container">
-  <h1 class="page-title">发布题目</h1>
-  <p class="page-desc">发一道单选题，学生在答题页选答案。</p>
-
-  <div class="card">
-    <div class="form-row">
-      <label for="classroomId">课堂 ID</label>
-      <input class="input" id="classroomId" type="number" placeholder="建课后生成的 id，比如 1">
-    </div>
-
-    <div class="form-row">
-      <label for="title">题目</label>
-      <input class="input" id="title" type="text" placeholder="比如：HTTP 默认端口是？">
-    </div>
-
-    <div class="form-row">
-      <label for="optionA">A</label>
-      <input class="input" id="optionA" type="text" placeholder="80">
-    </div>
-
-    <div class="form-row">
-      <label for="optionB">B</label>
-      <input class="input" id="optionB" type="text" placeholder="443">
-    </div>
-
-    <div class="form-row">
-      <label for="optionC">C</label>
-      <input class="input" id="optionC" type="text" placeholder="8080">
-    </div>
-
-    <div class="form-row">
-      <label for="optionD">D</label>
-      <input class="input" id="optionD" type="text" placeholder="3306">
-    </div>
-
-    <div class="form-row">
-      <label>正确答案</label>
-      <div class="radio-line">
-        <label><input type="radio" name="answer" value="A" checked> A</label>
-        <label><input type="radio" name="answer" value="B"> B</label>
-        <label><input type="radio" name="answer" value="C"> C</label>
-        <label><input type="radio" name="answer" value="D"> D</label>
-      </div>
-    </div>
-
-    <button class="btn btn-primary" onclick="publishExercise()">发布</button>
-    <div id="result" class="notice" style="margin-top: 14px;">还没有发布题目</div>
-  </div>
+  <h1 class="page-title">教师端 · 发题</h1>
+  <p class="page-desc">页面还没开始做。</p>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
-  var user = checkLogin('teacher');
-  if (user) {
-    fillUser();
-  }
-
-  async function publishExercise() {
-    var classroomId = Number(document.getElementById('classroomId').value);
-    var title = document.getElementById('title').value.trim();
-    var a = document.getElementById('optionA').value.trim();
-    var b = document.getElementById('optionB').value.trim();
-    var c = document.getElementById('optionC').value.trim();
-    var d = document.getElementById('optionD').value.trim();
-    var answer = document.querySelector('input[name="answer"]:checked').value;
-
-    if (!classroomId || !title || !a || !b || !c || !d) {
-      alert('把课堂 ID、题目和四个选项填完');
-      return;
-    }
-
-    var options = 'A.' + a + '|B.' + b + '|C.' + c + '|D.' + d;
-
-    // TODO(M2): 调接口发题
-    // var res = await myFetch('/api/exercise', 'POST', {
-    //   classroomId: classroomId,
-    //   title: title,
-    //   options: options,
-    //   answer: answer
-    // });
-    // document.getElementById('result').innerText = '发布成功，题目 id：' + res.data.id;
-
-    alert('发题功能还在开发中');
-  }
+  checkLogin('teacher');
 </script>
 
 </body>

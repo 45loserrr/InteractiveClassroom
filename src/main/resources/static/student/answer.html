@@ -8,98 +8,14 @@
 </head>
 <body>
 
-<div class="navbar">
-  <div class="brand">移动互动课堂 · 学生端</div>
-  <div class="links">
-    <a href="/student/">签到</a>
-    <a href="/student/answer.html" class="active">答题</a>
-    <a href="/screen/" target="_blank">大屏</a>
-    <span class="user" id="userName"></span>
-    <a href="javascript:logout()">退出</a>
-  </div>
-</div>
-
 <div class="container">
-  <h1 class="page-title">课堂答题</h1>
-  <p class="page-desc">老师发题后，题目会显示在这里。</p>
-
-  <div class="card">
-    <div id="questionBox">
-      <p class="muted">还没有题目</p>
-    </div>
-
-    <div id="optionBox" class="grid" style="margin-top: 14px;"></div>
-
-    <div id="result" class="notice" style="margin-top: 14px;">选一个答案再提交</div>
-
-    <div style="margin-top: 14px;">
-      <button class="btn btn-primary" onclick="loadExercise()">加载题目</button>
-      <button class="btn" onclick="submitAnswer()">提交答案</button>
-    </div>
-  </div>
+  <h1 class="page-title">学生端 · 答题</h1>
+  <p class="page-desc">页面还没开始做。</p>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
-  var user = checkLogin('student');
-  if (user) {
-    fillUser();
-  }
-
-  var currentExerciseId = 0;
-  var chooseOption = '';
-
-  async function loadExercise() {
-    var classroomId = Number(localStorage.getItem('classroomId') || 0);
-    if (!classroomId) {
-      alert('先去签到');
-      return;
-    }
-
-    // TODO(M4): 拿题目，拆选项
-    // var res = await myFetch('/api/exercise/list?classroomId=' + classroomId, 'GET');
-    // if (res.code === 200 && res.data.length > 0) {
-    //   var exercise = res.data[0];
-    //   currentExerciseId = exercise.id;
-    //   document.getElementById('questionBox').innerHTML = '<h2>' + exercise.title + '</h2>';
-    //   var options = exercise.options.split('|');
-    //   var html = '';
-    //   for (var i = 0; i < options.length; i++) {
-    //     var letter = options[i].substring(0, 1);
-    //     html += '<button class="btn" onclick="selectOption(\'' + letter + '\', this)">' + options[i] + '</button>';
-    //   }
-    //   document.getElementById('optionBox').innerHTML = html;
-    // }
-
-    alert('题目功能还在开发中');
-  }
-
-  function selectOption(letter, btn) {
-    chooseOption = letter;
-    var buttons = document.querySelectorAll('#optionBox .btn');
-    for (var i = 0; i < buttons.length; i++) {
-      buttons[i].classList.remove('btn-primary');
-    }
-    btn.classList.add('btn-primary');
-    document.getElementById('result').innerText = '选了 ' + letter;
-  }
-
-  async function submitAnswer() {
-    if (!currentExerciseId || !chooseOption) {
-      alert('先加载题目，再选答案');
-      return;
-    }
-
-    // TODO(M4): 提交答案，后端判对错
-    // var res = await myFetch('/api/answer', 'POST', {
-    //   exerciseId: currentExerciseId,
-    //   studentId: user.userId,
-    //   chooseOption: chooseOption
-    // });
-    // document.getElementById('result').innerText = res.data.correct ? '答对了' : '答错了';
-
-    alert('答题功能还在开发中');
-  }
+  checkLogin('student');
 </script>
 
 </body>
