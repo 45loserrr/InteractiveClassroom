@@ -1,9 +1,9 @@
-package com.example.classroom.controller;
+package com.classroom.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.example.classroom.common.Result;
-import com.example.classroom.entity.User;
-import com.example.classroom.mapper.UserMapper;
+import com.classroom.common.Result;
+import com.classroom.entity.User;
+import com.classroom.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

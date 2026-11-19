@@ -1,0 +1,330 @@
+/* ============================================================
+   全站公共样式（PM 维护）
+   组员写页面时直接引用：<link rel="stylesheet" href="/css/common.css">
+   需要额外样式就写在自己页面的 <style> 里，不要改这个文件。
+   ============================================================ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+  background: #f0f4f8;
+  color: #1f2937;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ---------- 顶部导航 ---------- */
+.navbar {
+  min-height: 56px;
+  padding: 8px 24px;
+  background: #2563eb;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.navbar .brand {
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.navbar .links {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 14px;
+}
+
+.navbar .links a {
+  color: #dbeafe;
+}
+
+.navbar .links a:hover,
+.navbar .links a.active {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.navbar .user {
+  color: #bfdbfe;
+  font-size: 13px;
+}
+
+/* ---------- 布局 ---------- */
+.container {
+  max-width: 1000px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+.page-title {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.page-desc {
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+.card h2 {
+  font-size: 18px;
+  margin-bottom: 14px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+/* ---------- 表单 ---------- */
+.form-row {
+  margin-bottom: 16px;
+}
+
+.form-row label {
+  display: block;
+  margin-bottom: 6px;
+  color: #374151;
+  font-weight: bold;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #fff;
+  color: #1f2937;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #2563eb;
+}
+
+textarea.input {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.radio-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 6px;
+}
+
+.radio-line label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: normal;
+}
+
+/* ---------- 按钮 ---------- */
+.btn {
+  display: inline-block;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #e5e7eb;
+  color: #1f2937;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.btn:hover {
+  filter: brightness(0.97);
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: #1d4ed8;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ---------- 提示 ---------- */
+.notice {
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 13px;
+}
+
+.notice-warn {
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.notice-ok {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.notice-error {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.muted {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 12px;
+}
+
+.tag-green {
+  background: #d1fae5;
+  color: #047857;
+}
+
+.tag-orange {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+/* ---------- 表格 ---------- */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.table th,
+.table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.table th {
+  background: #f9fafb;
+  color: #374151;
+  font-weight: bold;
+}
+
+.table tr:hover td {
+  background: #f9fafb;
+}
+
+/* ---------- 登录 / 注册 ---------- */
+.center-page {
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #dbeafe, #eff6ff);
+}
+
+.login-card {
+  width: 380px;
+  max-width: 100%;
+  padding: 34px 30px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.login-card h1 {
+  margin-bottom: 6px;
+  color: #1e3a8a;
+  font-size: 24px;
+  text-align: center;
+}
+
+.login-card .subtitle {
+  margin-bottom: 24px;
+  color: #6b7280;
+  font-size: 13px;
+  text-align: center;
+}
+
+.login-card .bottom-link {
+  margin-top: 16px;
+  color: #6b7280;
+  font-size: 13px;
+  text-align: center;
+}
+
+.demo-accounts {
+  margin-top: 16px;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border-radius: 8px;
+  color: #6b7280;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* ---------- 组员占位提示 ---------- */
+.todo-box {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px dashed #93c5fd;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.todo-box code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #dbeafe;
+  font-family: Consolas, "Courier New", monospace;
+}

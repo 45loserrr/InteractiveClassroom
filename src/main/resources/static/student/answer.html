@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>答题 - 移动互动课堂</title>
+  <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+
+<!-- 顶部导航：学生端 -->
+<div class="navbar">
+  <div class="brand">移动互动课堂 · 学生端</div>
+  <div class="links">
+    <a href="/student/join.html">签到</a>
+    <a href="/student/answer.html" class="active">答题</a>
+    <a href="/screen/index.html" target="_blank">大屏</a>
+    <span class="user" id="userName"></span>
+    <a href="javascript:logout()">退出</a>
+  </div>
+</div>
+
+<div class="container">
+  <h1 class="page-title">课堂答题</h1>
+  <p class="page-desc">老师发题后，题目会显示在下面，选一个答案提交即可。</p>
+
+  <div class="card">
+    <h2>当前题目</h2>
+
+    <div id="questionBox">
+      <p class="muted">还没有加载题目。</p>
+    </div>
+
+    <div id="optionBox" class="grid" style="margin-top: 16px;"></div>
+
+    <div id="result" class="notice" style="margin-top: 16px;">
+      选好答案后点“提交答案”。
+    </div>
+
+    <div style="margin-top: 16px;">
+      <button class="btn btn-primary" onclick="loadExercise()">加载题目</button>
+      <button class="btn" onclick="submitAnswer()">提交答案</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>答题说明</h2>
+    <p class="muted">
+      1. 先在“签到”页面签到，签到页会把课堂 ID 存到浏览器里。<br>
+      2. 点“加载题目”从后端拿老师发布的题目。<br>
+      3. 每个选项只能选一个，提交后不能重复提交同一道题。
+    </p>
+  </div>
+
+  <div class="todo-box">
+    <strong>M4 负责这个页面：</strong><br>
+    1. 后端写 <code>GET /api/exercise/list?classroomId=1</code>（可以和 M2 商量）和
+       <code>POST /api/answer</code>，答题实体放 <code>entity/Answer.java</code>。<br>
+    2. 前端 <code>loadExercise()</code> 拿到题目后，把 <code>options</code> 用
+       <code>split('|')</code> 拆成 4 个选项显示出来。<br>
+    3. <code>submitAnswer()</code> 调答题接口，参数是
+       <code>{ exerciseId, studentId: user.userId, chooseOption: 'A' }</code>，
+       返回的 <code>correct</code> 决定提示“答对了”还是“答错了”。
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script>
+  // 只有学生能进这个页面
+  var user = checkLogin('student');
+  if (user) {
+    fillUser();
+  }
+
+  // M4 加载题目后，把当前题目 id 和选中的答案放在这两个变量里
+  var currentExerciseId = 0;
+  var chooseOption = '';
+
+  async function loadExercise() {
+    var classroomId = Number(localStorage.getItem('classroomId') || 0);
+    if (!classroomId) {
+      alert('请先到签到页面签到');
+      return;
+    }
+
+    // ================= TODO（M4 写这里） =================
+    // var res = await myFetch('/api/exercise/list?classroomId=' + classroomId, 'GET');
+    // if (res.code === 200 && res.data.length > 0) {
+    //   var exercise = res.data[0];              // 简单起见，先做第一题
+    //   currentExerciseId = exercise.id;
+    //   document.getElementById('questionBox').innerHTML =
+    //     '<h2>' + exercise.title + '</h2>';
+    //
+    //   var options = exercise.options.split('|');   // ["A.80", "B.443", ...]
+    //   var html = '';
+    //   for (var i = 0; i < options.length; i++) {
+    //     var letter = options[i].substring(0, 1);
+    //     html += '<button class="btn" onclick="selectOption(\'' + letter + '\', this)">'
+    //           + options[i] + '</button>';
+    //   }
+    //   document.getElementById('optionBox').innerHTML = html;
+    // }
+    // =====================================================
+
+    alert('题目接口还没写，M4 请参考页面里的 TODO 完成。');
+  }
+
+  // 选中一个选项（M4 可直接用）
+  function selectOption(letter, btn) {
+    chooseOption = letter;
+    var buttons = document.querySelectorAll('#optionBox .btn');
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].classList.remove('btn-primary');
+    }
+    btn.classList.add('btn-primary');
+    document.getElementById('result').innerText = '你选了 ' + letter + '，点“提交答案”提交。';
+  }
+
+  async function submitAnswer() {
+    if (!currentExerciseId || !chooseOption) {
+      alert('请先加载题目并选择一个答案');
+      return;
+    }
+
+    // ================= TODO（M4 写这里） =================
+    // var res = await myFetch('/api/answer', 'POST', {
+    //   exerciseId: currentExerciseId,
+    //   studentId: user.userId,
+    //   chooseOption: chooseOption
+    // });
+    // if (res.code === 200) {
+    //   document.getElementById('result').innerText =
+    //     res.data.correct ? '答对了！' : '答错了，正确答案是 ' + res.data.rightAnswer;
+    // }
+    // =====================================================
+
+    alert('答题接口还没写，M4 请参考页面里的 TODO 完成。');
+  }
+</script>
+
+</body>
+</html>

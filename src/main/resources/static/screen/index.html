@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>课堂大屏 - 移动互动课堂</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #0f172a;
+      color: #e2e8f0;
+      font-family: "Microsoft YaHei", Arial, sans-serif;
+    }
+    .screen {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 36px 28px 50px;
+    }
+    .head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      border-bottom: 2px solid #1e293b;
+      padding-bottom: 20px;
+    }
+    .head h1 {
+      font-size: 32px;
+      letter-spacing: 2px;
+    }
+    .head .sub {
+      margin-top: 8px;
+      color: #94a3b8;
+      font-size: 16px;
+    }
+    .head .back {
+      color: #93c5fd;
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 28px;
+    }
+    .stat {
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 26px 24px;
+      text-align: center;
+    }
+    .stat .num {
+      color: #38bdf8;
+      font-size: 56px;
+      font-weight: bold;
+      line-height: 1.2;
+    }
+    .stat .label {
+      margin-top: 8px;
+      color: #94a3b8;
+      font-size: 16px;
+    }
+    .panel {
+      margin-top: 28px;
+      background: #1e293b;
+      border-radius: 16px;
+      padding: 26px 28px;
+    }
+    .panel h2 {
+      font-size: 20px;
+      margin-bottom: 22px;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+      font-size: 16px;
+    }
+    .bar-label {
+      width: 24px;
+      color: #93c5fd;
+      font-weight: bold;
+    }
+    .bar-track {
+      flex: 1;
+      height: 26px;
+      background: #0f172a;
+      border-radius: 13px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, #2563eb, #38bdf8);
+      border-radius: 13px;
+      transition: width 0.4s;
+    }
+    .bar-count {
+      width: 34px;
+      text-align: right;
+      color: #cbd5e1;
+    }
+    .todo {
+      margin-top: 26px;
+      padding: 16px 18px;
+      border: 1px dashed #334155;
+      border-radius: 12px;
+      color: #94a3b8;
+      font-size: 13px;
+      line-height: 1.9;
+    }
+    .todo code {
+      color: #93c5fd;
+      font-family: Consolas, monospace;
+    }
+    @media (max-width: 700px) {
+      .stats { grid-template-columns: 1fr; }
+      .head h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="screen">
+  <div class="head">
+    <div>
+      <h1>移动互动课堂 · 课堂大屏</h1>
+      <div class="sub" id="classroomName">课堂：未选择（在网址后面加 ?classroomId=1 试试）</div>
+    </div>
+    <a class="back" href="javascript:history.back()">← 返回上一页</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="num" id="checkinCount">0</div>
+      <div class="label">已签到人数</div>
+    </div>
+    <div class="stat">
+      <div class="num" id="answerCount">0</div>
+      <div class="label">已答题人次</div>
+    </div>
+    <div class="stat">
+      <div class="num" id="studentCount">0</div>
+      <div class="label">学生总人数</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>选项分布</h2>
+
+    <div class="bar-row">
+      <span class="bar-label">A</span>
+      <div class="bar-track"><div class="bar-fill" id="barA"></div></div>
+      <span class="bar-count" id="countA">0</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">B</span>
+      <div class="bar-track"><div class="bar-fill" id="barB"></div></div>
+      <span class="bar-count" id="countB">0</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">C</span>
+      <div class="bar-track"><div class="bar-fill" id="barC"></div></div>
+      <span class="bar-count" id="countC">0</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">D</span>
+      <div class="bar-track"><div class="bar-fill" id="barD"></div></div>
+      <span class="bar-count" id="countD">0</span>
+    </div>
+  </div>
+
+  <div class="todo">
+    <strong>M5 负责这个页面：</strong>
+    后端写 <code>GET /api/screen/stats?classroomId=1</code>，
+    前端在 <code>refreshStats()</code> 里把返回的
+    <code>checkinCount</code>、<code>answerCount</code>、<code>studentCount</code>、
+    <code>optionCount</code> 填到上面的数字和进度条里，
+    最后打开 <code>setInterval(refreshStats, 3000)</code> 让它每 3 秒自动刷新。
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script>
+  // 大屏也要登录（用老师的浏览器打开就行）
+  var user = checkLogin();
+
+  // 课堂 ID 优先从网址拿：/screen/index.html?classroomId=1
+  var params = new URLSearchParams(location.search);
+  var classroomId = Number(params.get('classroomId') || localStorage.getItem('classroomId') || 0);
+
+  if (classroomId) {
+    document.getElementById('classroomName').innerText = '课堂 ID：' + classroomId;
+  }
+
+  // M5 在这里写接口调用
+  async function refreshStats() {
+    if (!classroomId) {
+      return;
+    }
+
+    // ================= TODO（M5 写这里） =================
+    // var res = await myFetch('/api/screen/stats?classroomId=' + classroomId, 'GET');
+    // if (res.code !== 200) {
+    //   return;
+    // }
+    // var data = res.data;
+    // document.getElementById('classroomName').innerText = '课堂：' + data.classroomName;
+    // document.getElementById('checkinCount').innerText = data.checkinCount;
+    // document.getElementById('answerCount').innerText = data.answerCount;
+    // document.getElementById('studentCount').innerText = data.studentCount;
+    //
+    // var max = Math.max(data.optionCount.A, data.optionCount.B,
+    //                    data.optionCount.C, data.optionCount.D, 1);
+    // var letters = ['A', 'B', 'C', 'D'];
+    // for (var i = 0; i < letters.length; i++) {
+    //   var letter = letters[i];
+    //   var count = data.optionCount[letter] || 0;
+    //   document.getElementById('count' + letter).innerText = count;
+    //   document.getElementById('bar' + letter).style.width = (count / max * 100) + '%';
+    // }
+    // =====================================================
+  }
+
+  // 接口写好后，把下面这行注释打开，就会每 3 秒刷新一次
+  // setInterval(refreshStats, 3000);
+</script>
+
+</body>
+</html>

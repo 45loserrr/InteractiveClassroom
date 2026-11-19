@@ -3,158 +3,67 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>首页 - 移动互动课堂</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #f0f4f8;
-      font-family: "Microsoft YaHei", Arial, sans-serif;
-      color: #1f2937;
-    }
-    .top {
-      background: #2563eb;
-      color: #fff;
-      padding: 18px 28px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .top h1 { margin: 0; font-size: 19px; }
-    .top .user { font-size: 14px; }
-    .logout {
-      margin-left: 14px;
-      padding: 6px 12px;
-      border: 1px solid #fff;
-      border-radius: 6px;
-      background: transparent;
-      color: #fff;
-      cursor: pointer;
-      font-size: 13px;
-    }
-    .wrap { max-width: 860px; margin: 0 auto; padding: 30px 20px; }
-    .welcome {
-      background: #fff;
-      border-radius: 12px;
-      padding: 22px 24px;
-      margin-bottom: 22px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-    }
-    .welcome h2 { margin: 0 0 8px; font-size: 20px; }
-    .welcome p { margin: 0; color: #6b7280; font-size: 14px; }
-    .tag {
-      display: inline-block;
-      margin-left: 8px;
-      padding: 2px 8px;
-      background: #dbeafe;
-      color: #1d4ed8;
-      border-radius: 10px;
-      font-size: 12px;
-      vertical-align: middle;
-    }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 16px;
-    }
-    .card {
-      display: block;
-      background: #fff;
-      border-radius: 12px;
-      padding: 20px;
-      text-decoration: none;
-      color: inherit;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-      transition: transform 0.15s, box-shadow 0.15s;
-    }
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    }
-    .card .icon { font-size: 26px; }
-    .card h3 { margin: 10px 0 6px; font-size: 16px; }
-    .card p { margin: 0; color: #6b7280; font-size: 13px; line-height: 1.6; }
-    .note {
-      margin-top: 24px;
-      font-size: 12px;
-      color: #9ca3af;
-      line-height: 1.8;
-    }
-  </style>
+  <title>登录 - 移动互动课堂</title>
+  <link rel="stylesheet" href="/css/common.css">
 </head>
-<body>
+<body class="center-page">
 
-<div class="top">
+<div class="login-card">
   <h1>移动互动课堂</h1>
-  <div class="user">
-    <span id="who">未登录</span>
-    <button class="logout" onclick="logout()">退出登录</button>
-  </div>
-</div>
+  <p class="subtitle">登录后开始上课</p>
 
-<div class="wrap">
-  <div class="welcome">
-    <h2>你好，<span id="name">同学</span><span class="tag" id="roleTag">学生</span></h2>
-    <p id="welcomeText">选择下面的功能开始上课吧。</p>
-  </div>
+  <form onsubmit="login(); return false;">
+    <div class="form-row">
+      <label for="username">账号</label>
+      <input class="input" id="username" type="text" placeholder="请输入账号" autocomplete="username">
+    </div>
 
-  <div class="cards" id="menu"></div>
+    <div class="form-row">
+      <label for="password">密码</label>
+      <input class="input" id="password" type="password" placeholder="请输入密码" autocomplete="current-password">
+    </div>
 
-  <div class="note">
-    小提示：各模块的入口页统一使用自己目录下的 index.html。<br>
-    如果点进去是 404，说明对应同学还没提交代码，不是你的电脑坏了。
+    <button class="btn btn-primary btn-block" type="submit">登 录</button>
+  </form>
+
+  <div class="bottom-link">还没有账号？<a href="/register.html">去注册</a></div>
+
+  <div class="demo-accounts">
+    测试账号（密码都是 123456）<br>
+    老师：teacher　学生：stu01 / stu02 / stu03
   </div>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
-  // 没登录就直接回登录页
-  var token = localStorage.getItem('token');
-  if (!token) {
-    location.replace('/login.html');
-  }
+  async function login() {
+    var username = document.getElementById('username').value.trim();
+    var password = document.getElementById('password').value;
 
-  var role = localStorage.getItem('role') || 'student';
-  var realName = localStorage.getItem('realName') || '同学';
+    if (!username || !password) {
+      alert('账号和密码都要填');
+      return;
+    }
 
-  document.getElementById('name').innerText = realName;
-  document.getElementById('who').innerText = realName;
-  document.getElementById('roleTag').innerText = role === 'teacher' ? '老师' : '学生';
+    var res = await myFetch('/api/auth/login', 'POST', {
+      username: username,
+      password: password
+    });
 
-  var menus = [];
+    if (res.code === 200) {
+      // 登录成功：token、角色、姓名都存起来，后面的页面直接读
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('role', res.data.role);
+      localStorage.setItem('realName', res.data.realName || res.data.username);
+      localStorage.setItem('userId', res.data.id);
 
-  if (role === 'teacher') {
-    document.getElementById('welcomeText').innerText = '你可以建课、发题，也可以打开大屏和导出数据。';
-    menus = [
-      { icon: '🏫', title: '建课 / 发题', desc: '创建课堂、生成邀请码、发布课堂练习', href: '/teacher/index.html' },
-      { icon: '📺', title: '课堂大屏', desc: '展示签到人数、答题统计，适合投屏', href: '/screen/index.html' },
-      { icon: '📊', title: '数据导出', desc: '导出签到和答题记录，写报告用', href: '/report/index.html' }
-    ];
-  } else {
-    document.getElementById('welcomeText').innerText = '输入老师给的课堂口令就能签到，老师发题后可以答题。';
-    menus = [
-      { icon: '✅', title: '签到 / 答题', desc: '输入课堂口令签到，参与老师发布的题目', href: '/student/index.html' },
-      { icon: '📺', title: '课堂大屏', desc: '看看当前课堂的签到和答题情况', href: '/screen/index.html' }
-    ];
-  }
-
-  var html = '';
-  for (var i = 0; i < menus.length; i++) {
-    html += '<a class="card" href="' + menus[i].href + '">' +
-              '<div class="icon">' + menus[i].icon + '</div>' +
-              '<h3>' + menus[i].title + '</h3>' +
-              '<p>' + menus[i].desc + '</p>' +
-            '</a>';
-  }
-  document.getElementById('menu').innerHTML = html;
-
-  function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('realName');
-    localStorage.removeItem('userId');
-    location.href = '/login.html';
+      // 老师去建课页，学生去签到页
+      if (res.data.role === 'teacher') {
+        location.href = '/teacher/home.html';
+      } else {
+        location.href = '/student/join.html';
+      }
+    }
   }
 </script>
 

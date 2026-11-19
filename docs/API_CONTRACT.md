@@ -93,7 +93,22 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 { "code": 401, "msg": "请先登录", "data": null }
 ```
 
-`myFetch` 会自动清空 localStorage 并跳回 `/login.html`。
+`myFetch` 会自动清空 localStorage 并跳回 `/index.html`（登录页）。
+
+### 2.4 页面入口
+
+| 页面 | 路径 | 负责人 |
+| --- | --- | --- |
+| 登录 | `/index.html` | PM |
+| 注册 | `/register.html` | PM |
+| 老师建课 | `/teacher/home.html` | M2 |
+| 老师发题 | `/teacher/publish.html` | M2 |
+| 学生签到 | `/student/join.html` | M1 |
+| 学生答题 | `/student/answer.html` | M4 |
+| 课堂大屏 | `/screen/index.html` | M5 |
+| 数据导出 | `/report/index.html` | M3 |
+
+登录成功后：老师跳 `/teacher/home.html`，学生跳 `/student/join.html`。
 
 ---
 
@@ -103,6 +118,7 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 | --- | --- | --- | --- | --- |
 | 登录 | POST | `/api/auth/login` | PM | ✅ 已完成 |
 | 注册 | POST | `/api/auth/register` | PM | ✅ 已完成 |
+| 建课 | POST | `/api/classroom` | M2 | ⬜ 待开发 |
 | 课堂列表 | GET | `/api/classroom/list` | M2 | ⬜ 待开发 |
 | 按口令查课堂 | GET | `/api/classroom/byCode` | M2 | ⬜ 待开发 |
 | 签到 | POST | `/api/checkin` | M1 | ⬜ 待开发 |
@@ -183,7 +199,41 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 
 ---
 
-### 4.3 查课堂列表（M2）
+### 4.3 建课（M2）
+
+`POST /api/classroom`
+
+**请求**
+
+```json
+{
+  "name": "软件工程",
+  "teacherId": 1
+}
+```
+
+- `teacherId` 从 localStorage 的 `userId` 拿，不要让学生手填。
+- 后端生成一个 6 位课堂口令 `code`（大写字母 + 数字），学生凭它签到。
+
+**成功返回**
+
+```json
+{
+  "code": 200,
+  "msg": "创建成功",
+  "data": {
+    "id": 1,
+    "code": "A1B2C3",
+    "name": "软件工程",
+    "teacherId": 1,
+    "teacherName": "王老师"
+  }
+}
+```
+
+---
+
+### 4.4 查课堂列表（M2）
 
 `GET /api/classroom/list`
 
@@ -214,13 +264,13 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 
 ---
 
-### 4.4 按口令查课堂（M2）
+### 4.5 按口令查课堂（M2）
 
 `GET /api/classroom/byCode?code=A1B2C3`
 
 学生签到前先用口令找到课堂。
 
-**返回**：和 4.3 的单个对象一样，`data` 是一个对象；查不到返回 400。
+**返回**：和 4.4 的单个对象一样，`data` 是一个对象；查不到返回 400。
 
 ```json
 {
@@ -232,7 +282,7 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 
 ---
 
-### 4.5 签到（M1）
+### 4.6 签到（M1）
 
 `POST /api/checkin`
 
@@ -272,7 +322,7 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 
 ---
 
-### 4.6 签到列表（M1）
+### 4.7 签到列表（M1）
 
 `GET /api/checkin/list?classroomId=1`
 
@@ -298,7 +348,7 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 
 ---
 
-### 4.7 发布题目（M2）
+### 4.8 发布题目（M2）
 
 `POST /api/exercise`
 
@@ -328,7 +378,7 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 
 ---
 
-### 4.8 题目列表（M2）
+### 4.9 题目列表（M2）
 
 `GET /api/exercise/list?classroomId=1`
 
@@ -350,11 +400,11 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 ```
 
 > **注意：学生用的题目列表绝对不能返回 `answer` 字段**，不然打开 F12 就作弊了。
-> 对错由 4.9 的答题接口在后台判断。
+> 对错由 4.10 的答题接口在后台判断。
 
 ---
 
-### 4.9 提交答案（M4）
+### 4.10 提交答案（M4）
 
 `POST /api/answer`
 
@@ -392,7 +442,7 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 
 ---
 
-### 4.10 大屏统计（M5）
+### 4.11 大屏统计（M5）
 
 `GET /api/screen/stats?classroomId=1`
 
@@ -423,7 +473,7 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 
 ---
 
-### 4.11 导出报表（M3）
+### 4.12 导出报表（M3）
 
 `GET /api/report/export?classroomId=1`
 

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>建课 - 移动互动课堂</title>
+  <link rel="stylesheet" href="/css/common.css">
+</head>
+<body>
+
+<!-- 顶部导航：老师端 -->
+<div class="navbar">
+  <div class="brand">移动互动课堂 · 老师端</div>
+  <div class="links">
+    <a href="/teacher/home.html" class="active">建课</a>
+    <a href="/teacher/publish.html">发题</a>
+    <a href="/screen/index.html" target="_blank">大屏</a>
+    <a href="/report/index.html">数据导出</a>
+    <span class="user" id="userName"></span>
+    <a href="javascript:logout()">退出</a>
+  </div>
+</div>
+
+<div class="container">
+  <h1 class="page-title">创建课堂</h1>
+  <p class="page-desc">建一个课堂，系统会生成一个课堂口令，学生用口令签到。</p>
+
+  <div class="card">
+    <h2>新建课堂</h2>
+
+    <div class="form-row">
+      <label for="className">课程名称</label>
+      <input class="input" id="className" type="text" placeholder="例如：软件工程">
+    </div>
+
+    <button class="btn btn-primary" onclick="createClassroom()">创建课堂</button>
+
+    <div id="result" class="notice" style="margin-top: 16px;">
+      还没有创建课堂。
+    </div>
+  </div>
+
+  <div class="todo-box">
+    <strong>M2 负责这个页面：</strong><br>
+    1. 后端在 <code>controller/ClassroomController.java</code> 里写 <code>POST /api/classroom</code>，
+       实体和 Mapper 放在 <code>entity/Classroom.java</code>、<code>mapper/ClassroomMapper.java</code>。<br>
+    2. 前端把 <code>createClassroom()</code> 里的 TODO 换成
+       <code>myFetch('/api/classroom', 'POST', { name: name, teacherId: user.userId })</code>。<br>
+    3. 接口返回 <code>{ id, code, name, teacherId, teacherName }</code>，
+       把 <code>code</code> 显示到页面上，学生就凭它签到。
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script>
+  // 只有老师能进这个页面
+  var user = checkLogin('teacher');
+  if (user) {
+    fillUser();
+  }
+
+  async function createClassroom() {
+    var name = document.getElementById('className').value.trim();
+    if (!name) {
+      alert('请先填写课程名称');
+      return;
+    }
+
+    // ================= TODO（M2 写这里） =================
+    // var res = await myFetch('/api/classroom', 'POST', {
+    //   name: name,
+    //   teacherId: user.userId
+    // });
+    // if (res.code === 200) {
+    //   document.getElementById('result').innerText =
+    //     '创建成功！课堂口令：' + res.data.code + '，课堂 ID：' + res.data.id;
+    // }
+    // =====================================================
+
+    alert('建课接口还没写，M2 请参考页面里的 TODO 完成。');
+  }
+</script>
+
+</body>
+</html>

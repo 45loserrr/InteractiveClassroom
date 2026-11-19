@@ -1,7 +1,7 @@
-package com.example.classroom.mapper;
+package com.classroom.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.classroom.entity.User;
+import com.classroom.entity.User;
 
 /**
  * 用户 Mapper。

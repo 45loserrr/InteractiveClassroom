@@ -1,4 +1,4 @@
-package com.example.classroom.config;
+package com.classroom.config;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

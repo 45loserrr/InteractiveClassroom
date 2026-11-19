@@ -11,7 +11,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.example</groupId>
+    <groupId>com.classroom</groupId>
     <artifactId>classroom</artifactId>
     <version>1.0.0</version>
     <name>classroom</name>
