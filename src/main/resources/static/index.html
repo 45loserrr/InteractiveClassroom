@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>首页 - 移动互动课堂</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f0f4f8;
+      font-family: "Microsoft YaHei", Arial, sans-serif;
+      color: #1f2937;
+    }
+    .top {
+      background: #2563eb;
+      color: #fff;
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .top h1 { margin: 0; font-size: 19px; }
+    .top .user { font-size: 14px; }
+    .logout {
+      margin-left: 14px;
+      padding: 6px 12px;
+      border: 1px solid #fff;
+      border-radius: 6px;
+      background: transparent;
+      color: #fff;
+      cursor: pointer;
+      font-size: 13px;
+    }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 30px 20px; }
+    .welcome {
+      background: #fff;
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+    }
+    .welcome h2 { margin: 0 0 8px; font-size: 20px; }
+    .welcome p { margin: 0; color: #6b7280; font-size: 14px; }
+    .tag {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 8px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      border-radius: 10px;
+      font-size: 12px;
+      vertical-align: middle;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      display: block;
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+    .card .icon { font-size: 26px; }
+    .card h3 { margin: 10px 0 6px; font-size: 16px; }
+    .card p { margin: 0; color: #6b7280; font-size: 13px; line-height: 1.6; }
+    .note {
+      margin-top: 24px;
+      font-size: 12px;
+      color: #9ca3af;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="top">
+  <h1>移动互动课堂</h1>
+  <div class="user">
+    <span id="who">未登录</span>
+    <button class="logout" onclick="logout()">退出登录</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="welcome">
+    <h2>你好，<span id="name">同学</span><span class="tag" id="roleTag">学生</span></h2>
+    <p id="welcomeText">选择下面的功能开始上课吧。</p>
+  </div>
+
+  <div class="cards" id="menu"></div>
+
+  <div class="note">
+    小提示：各模块的入口页统一使用自己目录下的 index.html。<br>
+    如果点进去是 404，说明对应同学还没提交代码，不是你的电脑坏了。
+  </div>
+</div>
+
+<script src="/js/common.js"></script>
+<script>
+  // 没登录就直接回登录页
+  var token = localStorage.getItem('token');
+  if (!token) {
+    location.replace('/login.html');
+  }
+
+  var role = localStorage.getItem('role') || 'student';
+  var realName = localStorage.getItem('realName') || '同学';
+
+  document.getElementById('name').innerText = realName;
+  document.getElementById('who').innerText = realName;
+  document.getElementById('roleTag').innerText = role === 'teacher' ? '老师' : '学生';
+
+  var menus = [];
+
+  if (role === 'teacher') {
+    document.getElementById('welcomeText').innerText = '你可以建课、发题，也可以打开大屏和导出数据。';
+    menus = [
+      { icon: '🏫', title: '建课 / 发题', desc: '创建课堂、生成邀请码、发布课堂练习', href: '/teacher/index.html' },
+      { icon: '📺', title: '课堂大屏', desc: '展示签到人数、答题统计，适合投屏', href: '/screen/index.html' },
+      { icon: '📊', title: '数据导出', desc: '导出签到和答题记录，写报告用', href: '/report/index.html' }
+    ];
+  } else {
+    document.getElementById('welcomeText').innerText = '输入老师给的课堂口令就能签到，老师发题后可以答题。';
+    menus = [
+      { icon: '✅', title: '签到 / 答题', desc: '输入课堂口令签到，参与老师发布的题目', href: '/student/index.html' },
+      { icon: '📺', title: '课堂大屏', desc: '看看当前课堂的签到和答题情况', href: '/screen/index.html' }
+    ];
+  }
+
+  var html = '';
+  for (var i = 0; i < menus.length; i++) {
+    html += '<a class="card" href="' + menus[i].href + '">' +
+              '<div class="icon">' + menus[i].icon + '</div>' +
+              '<h3>' + menus[i].title + '</h3>' +
+              '<p>' + menus[i].desc + '</p>' +
+            '</a>';
+  }
+  document.getElementById('menu').innerHTML = html;
+
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('realName');
+    localStorage.removeItem('userId');
+    location.href = '/login.html';
+  }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 本地 MySQL 8.0，数据库名 classroom
+    # 注意：这台电脑的 MySQL 端口是 3307；如果你的 MySQL 是默认的 3306，把下面的 3307 改成 3306
+    url: jdbc:mysql://localhost:3307/classroom?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: "123456"
+  jackson:
+    # 以后返回时间统一成这个格式
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
+mybatis-plus:
+  configuration:
+    # 数据库的 real_name 自动对应 Java 的 realName
+    map-underscore-to-camel-case: true
+    # 控制台打印 SQL，方便调试；答辩前可以删掉这一行
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

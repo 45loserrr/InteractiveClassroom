@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册 - 移动互动课堂</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #dbeafe, #eff6ff);
+      font-family: "Microsoft YaHei", Arial, sans-serif;
+    }
+    .card {
+      width: 380px;
+      background: #fff;
+      padding: 36px 32px;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+    h1 {
+      margin: 0 0 6px;
+      font-size: 24px;
+      text-align: center;
+      color: #1e3a8a;
+    }
+    .subtitle {
+      margin: 0 0 26px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 13px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #374151;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      background: #fff;
+    }
+    input:focus, select:focus { border-color: #2563eb; }
+    button {
+      width: 100%;
+      padding: 11px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    button:hover { background: #1d4ed8; }
+    .tip {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 13px;
+      color: #6b7280;
+    }
+    .tip a { color: #2563eb; text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>注册新账号</h1>
+  <p class="subtitle">注册完就能直接登录</p>
+
+  <form onsubmit="register(); return false;">
+    <label for="username">账号</label>
+    <input id="username" type="text" placeholder="字母或数字，例如 stu04">
+
+    <label for="password">密码</label>
+    <input id="password" type="password" placeholder="至少 6 位">
+
+    <label for="realName">真实姓名</label>
+    <input id="realName" type="text" placeholder="例如 赵六">
+
+    <label for="role">角色</label>
+    <select id="role">
+      <option value="student">学生</option>
+      <option value="teacher">老师</option>
+    </select>
+
+    <button type="submit">注 册</button>
+  </form>
+
+  <div class="tip">已经有账号了？<a href="/login.html">去登录</a></div>
+</div>
+
+<script src="/js/common.js"></script>
+<script>
+  async function register() {
+    var username = document.getElementById('username').value.trim();
+    var password = document.getElementById('password').value;
+    var realName = document.getElementById('realName').value.trim();
+    var role = document.getElementById('role').value;
+
+    if (!username || !password) {
+      alert('账号和密码都要填');
+      return;
+    }
+    if (password.length < 6) {
+      alert('密码至少 6 位');
+      return;
+    }
+
+    var res = await myFetch('/api/auth/register', 'POST', {
+      username: username,
+      password: password,
+      realName: realName,
+      role: role
+    });
+
+    if (res.code === 200) {
+      alert('注册成功，去登录吧');
+      location.href = '/login.html';
+    }
+  }
+</script>
+
+</body>
+</html>
