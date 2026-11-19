@@ -275,6 +275,36 @@ git push
 
 交完在群里说一声，让下一个人 pull。
 
+### 承接关系
+
+PM 的框架和登录是底座，所有人都在这个基础上写。
+
+```
+PM（Token、Result、common.js、UserMapper）
+        │
+        ▼
+M2 建课（classroom）
+        │
+        ├──────────────┐
+        ▼              ▼
+M1 签到（checkin）   M2 发题（exercise）
+        │              │
+        │              ▼
+        │           M4 答题（answer）
+        │              │
+        └──────┬───────┘
+               ▼
+        M5 大屏 / M3 报表
+```
+
+- PM 交给所有人：登录后的 `token`、`Result` 格式、`myFetch`、`UserMapper`
+- M2 交给 M1：课堂 id、课堂口令、`GET /api/classroom/byCode`
+- M2 交给 M4：题目 id、`GET /api/exercise/list`、`ExerciseMapper`（判题用）
+- M1 交给 M4：签到后存在 `localStorage` 里的 `classroomId`，答题页要用
+- M1 交给 M5/M3：签到数据
+- M4 交给 M5/M3：答题数据
+- M5 和 M3 最后接签到、答题的数据；M3 等数据齐了再导。
+
 ## 五、组员写后端的模板
 
 新建一个 Controller，照这个写就行（以签到为例）：
