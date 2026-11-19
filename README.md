@@ -140,39 +140,39 @@ mvn spring-boot:run
 - 登录、注册、UUID Token、登录拦截器；
 - 公共样式 `css/common.css`、公共 JS `js/common.js`（`myFetch`、`checkLogin`、`fillUser`、`logout`）；
 - 登录页 `index.html`、注册页 `register.html`；
-- 6 个组员页面只留了空白占位页（标题 + 登录校验），业务界面和接口由组员自己写；
+- 6 个组员页面只留了导航菜单和空白内容区（登录校验已经在页面里），业务界面和接口由组员自己写；
 - 接口契约 `docs/API_CONTRACT.md`、README、Git 仓库。
 
 ### M1 要改哪里（签到）
 
-- 前端：`static/student/join.html` 现在是空白页，签到界面和请求逻辑由你写。
+- 前端：`static/student/join.html` 现在是空白内容区，签到界面和请求逻辑由你写。
 - 后端：新建 `CheckinController`、`Checkin`、`CheckinMapper`。
 - 需要的接口：`GET /api/classroom/byCode?code=xxx`（找 M2 要）、`POST /api/checkin`。
 - 签到成功后请执行 `localStorage.setItem('classroomId', 课堂id)`，M4 的答题页要用。
 
 ### M2 要改哪里（建课 / 发题）
 
-- 前端：`static/teacher/home.html`、`static/teacher/publish.html` 现在是空白页，两个界面由你写。
+- 前端：`static/teacher/home.html`、`static/teacher/publish.html` 现在是空白内容区，两个界面由你写。
 - 后端：新建 `ClassroomController`、`ExerciseController` 和对应实体、Mapper。
 - 需要的接口：`POST /api/classroom`（建课，生成 6 位口令）、`GET /api/classroom/byCode`（给 M1 用）、`POST /api/exercise`（发题）。
 - 建课返回的 `code` 就是课堂口令，格式建议 6 位大写字母/数字。
 
 ### M3 要改哪里（数据导出）
 
-- 前端：`static/report/index.html` 现在是空白页，导出按钮和下载逻辑由你写。
+- 前端：`static/report/index.html` 现在是空白内容区，导出按钮和下载逻辑由你写。
 - 后端：新建 `ReportController`，返回 CSV，不要返回 JSON。
 - CSV 列顺序固定：`账号,姓名,签到时间,题目,选择,是否正确`，开头加 UTF-8 BOM。
 
 ### M4 要改哪里（答题）
 
-- 前端：`static/student/answer.html` 现在是空白页，答题界面由你写。
+- 前端：`static/student/answer.html` 现在是空白内容区，答题界面由你写。
 - 后端：新建 `AnswerController`、`Answer`、`AnswerMapper`。
 - 需要的接口：`GET /api/exercise/list?classroomId=1`（找 M2 要）、`POST /api/answer`。
 - 判对错必须由后端查 `exercise.answer` 判断，不能信前端。
 
 ### M5 要改哪里（大屏）
 
-- 前端：`static/screen/index.html` 现在是空白页，大屏界面由你写。
+- 前端：`static/screen/index.html` 现在是空白内容区，大屏界面由你写。
 - 后端：新建 `ScreenController`，写 `GET /api/screen/stats?classroomId=1`。
 - 返回字段看 `docs/API_CONTRACT.md` 第 4.11 节，`optionCount` 的 A/B/C/D 四个键都要有，没人选就是 0。
 
