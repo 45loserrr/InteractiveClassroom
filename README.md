@@ -133,6 +133,39 @@ mvn spring-boot:run
 | **M4** | 答题 | `static/student/answer.html` | `controller/AnswerController.java`、`entity/Answer.java`、`mapper/AnswerMapper.java` | 学生能选选项提交，能提示答对/答错 |
 | **M5** | 大屏展示 | `static/screen/index.html` | `controller/ScreenController.java` | 大屏每 3 秒刷新签到数、答题数和选项分布 |
 
+### 每个人只能改这些文件
+
+下面 Java 文件都在 `src/main/java/com/classroom/` 下，前端文件都在 `src/main/resources/static/` 下。
+只改自己的，不要动别人的页面和类；要查用户名可以调用 PM 的 `UserMapper`，但不要改。要改接口字段，先改 `docs/API_CONTRACT.md` 并在群里说。
+
+**PM**
+- 后端：`ClassroomApplication.java`、`common/Result.java`、`config/`、`controller/AuthController.java`、`entity/User.java`、`mapper/UserMapper.java`
+- 前端：`index.html`、`register.html`、`css/common.css`、`js/common.js`
+- 配置：`pom.xml`、`application.yml`、`sql/V1__init.sql`、`README.md`、`docs/API_CONTRACT.md`
+
+**M1（签到）**
+- 前端：`student/join.html`
+- 后端：`controller/CheckinController.java`、`entity/Checkin.java`、`mapper/CheckinMapper.java`
+
+**M2（建课 / 发题）**
+- 前端：`teacher/home.html`、`teacher/publish.html`
+- 后端：`controller/ClassroomController.java`、`controller/ExerciseController.java`、`entity/Classroom.java`、`entity/Exercise.java`、`mapper/ClassroomMapper.java`、`mapper/ExerciseMapper.java`
+
+**M3（报表）**
+- 前端：`report/index.html`
+- 后端：`controller/ReportController.java`
+- 查数据可以调用 M1/M2/M4 的 mapper，但不要改他们的文件。
+
+**M4（答题）**
+- 前端：`student/answer.html`
+- 后端：`controller/AnswerController.java`、`entity/Answer.java`、`mapper/AnswerMapper.java`
+- 判对错要读 M2 的 `ExerciseMapper`，可以调用，不要改。
+
+**M5（大屏）**
+- 前端：`screen/index.html`
+- 后端：`controller/ScreenController.java`
+- 统计可以调用 M1/M4 的 mapper，但不要改。
+
 ### PM 已经完成的部分
 
 - 项目骨架、`pom.xml`、`application.yml`、`.gitignore`；
@@ -196,17 +229,51 @@ mvn spring-boot:run
 
 ### 组员发代码顺序
 
-建议按这个顺序交，别一起堆到最后：
+按这个顺序交，前一步不 push，后一步不好联调：
 
-1. PM：框架 + 登录注册（已完成，大家先 `git pull` 拉下来）
-2. M2：建课 + 发题（课堂和题目接口，后面所有人都要用）
-3. M1：签到（用 M2 的课堂 id）
-4. M4：答题（用 M2 的题目 id）
-5. M5：大屏（用 M1 的签到数据 + M4 的答题数据）
-6. M3：报表（最后做，数据齐了再导）
+1. **PM**：框架 + 登录注册（已完成）
+   - 大家先 `git pull`。
 
-M2 如果写得慢，可以先只交建课，让 M1 先联调；发题交完再让 M4 做。
-每一步写完先本地跑通，再 `git pull`、`commit`、`push`，然后在群里说一声。
+2. **M2：建课（第一次提交）**
+   - 文件：`Classroom.java`、`ClassroomMapper.java`、`ClassroomController.java`、`teacher/home.html`
+   - 接口：`POST /api/classroom`、`GET /api/classroom/byCode`
+   - M2 交完，M1 才能开始。
+
+3. **M1：签到**
+   - 文件：`Checkin.java`、`CheckinMapper.java`、`CheckinController.java`、`student/join.html`
+   - 接口：`POST /api/checkin`、`GET /api/checkin/list`
+   - 用 M2 的课堂 id。
+
+4. **M2：发题（第二次提交）**
+   - 文件：`Exercise.java`、`ExerciseMapper.java`、`ExerciseController.java`、`teacher/publish.html`
+   - 接口：`POST /api/exercise`、`GET /api/exercise/list`
+   - M2 交完，M4 才能开始。
+
+5. **M4：答题**
+   - 文件：`Answer.java`、`AnswerMapper.java`、`AnswerController.java`、`student/answer.html`
+   - 接口：`POST /api/answer`
+   - 用 M2 的题目 id。
+
+6. **M5：大屏**
+   - 文件：`ScreenController.java`、`screen/index.html`
+   - 接口：`GET /api/screen/stats`
+   - 等 M1、M4 交完再做。
+
+7. **M3：报表**
+   - 文件：`ReportController.java`、`report/index.html`
+   - 接口：`GET /api/report/export`
+   - 最后做，等签到和答题都有数据。
+
+每个人提交时只 add 自己的文件，不要 `git add .`：
+
+```bash
+git pull
+git add <自己的文件>
+git commit -m "feat: M1 签到"
+git push
+```
+
+交完在群里说一声，让下一个人 pull。
 
 ## 五、组员写后端的模板
 
