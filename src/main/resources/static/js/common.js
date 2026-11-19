@@ -82,8 +82,8 @@ window.checkLogin = function (needRole) {
   }
 
   if (needRole && user.role !== needRole) {
-    alert('这个页面是' + (needRole === 'teacher' ? '老师' : '学生') + '用的，你进错啦');
-    location.replace(user.role === 'teacher' ? '/teacher/home.html' : '/student/join.html');
+    alert('这个页面不是给你用的');
+    location.replace(user.role === 'teacher' ? '/teacher/' : '/student/');
     return null;
   }
 

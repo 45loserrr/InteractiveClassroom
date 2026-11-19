@@ -102,7 +102,16 @@ mvn spring-boot:run
 
 ### 4. 访问
 
-浏览器打开：<http://localhost:8080/index.html>
+登录页：<http://localhost:8080/index.html>
+
+三个端各自有独立网址，可以直接打开：
+
+- 教师端：<http://localhost:8080/teacher/>
+- 学生端：<http://localhost:8080/student/>
+- 大屏：<http://localhost:8080/screen/>
+- 数据导出：<http://localhost:8080/report/>
+
+`/teacher/` 会自动跳到 `/teacher/home.html`，`/student/` 会自动跳到 `/student/join.html`。
 
 ### 测试账号
 
@@ -173,17 +182,17 @@ mvn spring-boot:run
 | --- | --- | --- |
 | 登录 | `/index.html`（访问 `/` 也会到这个页面） | PM |
 | 注册 | `/register.html` | PM |
-| 老师建课 | `/teacher/home.html` | M2 |
-| 老师发题 | `/teacher/publish.html` | M2 |
-| 学生签到 | `/student/join.html` | M1 |
+| 教师端（建课） | `/teacher/`（跳到 `/teacher/home.html`） | M2 |
+| 教师发题 | `/teacher/publish.html` | M2 |
+| 学生端（签到） | `/student/`（跳到 `/student/join.html`） | M1 |
 | 学生答题 | `/student/answer.html` | M4 |
-| 课堂大屏 | `/screen/index.html` | M5 |
-| 数据导出 | `/report/index.html` | M3 |
+| 课堂大屏 | `/screen/` | M5 |
+| 数据导出 | `/report/` | M3 |
 
 登录成功后的跳转：
 
-- 老师 → `/teacher/home.html`
-- 学生 → `/student/join.html`
+- 老师 → `/teacher/`
+- 学生 → `/student/`
 
 ## 五、组员写后端的模板
 

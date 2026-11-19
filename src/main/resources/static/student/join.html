@@ -8,13 +8,12 @@
 </head>
 <body>
 
-<!-- 顶部导航：学生端 -->
 <div class="navbar">
   <div class="brand">移动互动课堂 · 学生端</div>
   <div class="links">
-    <a href="/student/join.html" class="active">签到</a>
+    <a href="/student/" class="active">签到</a>
     <a href="/student/answer.html">答题</a>
-    <a href="/screen/index.html" target="_blank">大屏</a>
+    <a href="/screen/" target="_blank">大屏</a>
     <span class="user" id="userName"></span>
     <a href="javascript:logout()">退出</a>
   </div>
@@ -22,46 +21,23 @@
 
 <div class="container">
   <h1 class="page-title">课堂签到</h1>
-  <p class="page-desc">输入老师给的课堂口令，就能完成签到。</p>
+  <p class="page-desc">输入老师给的课堂口令签到。</p>
 
   <div class="card">
-    <h2>输入课堂口令</h2>
-
     <div class="form-row">
       <label for="courseCode">课堂口令</label>
-      <input class="input" id="courseCode" type="text" placeholder="例如：A1B2C3" style="text-transform: uppercase;">
+      <input class="input" id="courseCode" type="text" placeholder="比如：A1B2C3">
     </div>
 
-    <button class="btn btn-primary" onclick="joinClass()">签 到</button>
-
-    <div id="result" class="notice" style="margin-top: 16px;">
-      还没有签到。
-    </div>
+    <button class="btn btn-primary" onclick="joinClass()">签到</button>
+    <div id="result" class="notice" style="margin-top: 14px;">还没有签到</div>
   </div>
 
-  <div class="card">
-    <h2>签到说明</h2>
-    <p class="muted">
-      1. 课堂口令由老师在“建课”页面生成，一般是 6 位字母或数字。<br>
-      2. 签到成功后，去“答题”页面参与老师发布的题目。<br>
-      3. 同一节课重复签到会提示“你已经签到过了”。
-    </p>
-  </div>
-
-  <div class="todo-box">
-    <strong>M1 负责这个页面：</strong><br>
-    1. 后端写 <code>GET /api/classroom/byCode?code=xxx</code>（可以和 M2 商量）和
-       <code>POST /api/checkin</code>，签到实体放 <code>entity/Checkin.java</code>。<br>
-    2. 前端在 <code>joinClass()</code> 里：先用口令查课堂，拿到 <code>classroomId</code>，
-       再调签到接口，参数是 <code>{ classroomId, studentId: user.userId }</code>。<br>
-    3. 签到成功后把 <code>classroomId</code> 存到 <code>localStorage</code>，
-       这样 M4 的答题页能直接拿来用。
-  </div>
+  <p class="muted">M1：后端写 CheckinController，签到成功后把 classroomId 存起来，M4 的答题页要用。</p>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
-  // 只有学生能进这个页面
   var user = checkLogin('student');
   if (user) {
     fillUser();
@@ -70,30 +46,20 @@
   async function joinClass() {
     var code = document.getElementById('courseCode').value.trim().toUpperCase();
     if (!code) {
-      alert('请输入课堂口令');
+      alert('先输课堂口令');
       return;
     }
 
-    // ================= TODO（M1 写这里） =================
-    // 第 1 步：用口令查课堂
+    // TODO(M1): 先按口令查课堂，再签到
     // var classroomRes = await myFetch('/api/classroom/byCode?code=' + code, 'GET');
-    // if (classroomRes.code !== 200) {
-    //   return;
-    // }
-    //
-    // 第 2 步：签到
-    // var checkinRes = await myFetch('/api/checkin', 'POST', {
+    // var res = await myFetch('/api/checkin', 'POST', {
     //   classroomId: classroomRes.data.id,
     //   studentId: user.userId
     // });
-    // if (checkinRes.code === 200) {
-    //   localStorage.setItem('classroomId', classroomRes.data.id);
-    //   document.getElementById('result').innerText =
-    //     '签到成功：' + classroomRes.data.name + '（' + checkinRes.data.createTime + '）';
-    // }
-    // =====================================================
+    // localStorage.setItem('classroomId', classroomRes.data.id);
+    // document.getElementById('result').innerText = '签到成功';
 
-    alert('签到接口还没写，M1 请参考页面里的 TODO 完成。');
+    alert('签到接口还没写');
   }
 </script>
 

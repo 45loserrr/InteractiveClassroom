@@ -101,14 +101,14 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 | --- | --- | --- |
 | 登录 | `/index.html` | PM |
 | 注册 | `/register.html` | PM |
-| 老师建课 | `/teacher/home.html` | M2 |
-| 老师发题 | `/teacher/publish.html` | M2 |
-| 学生签到 | `/student/join.html` | M1 |
+| 教师端（建课） | `/teacher/` | M2 |
+| 教师发题 | `/teacher/publish.html` | M2 |
+| 学生端（签到） | `/student/` | M1 |
 | 学生答题 | `/student/answer.html` | M4 |
-| 课堂大屏 | `/screen/index.html` | M5 |
-| 数据导出 | `/report/index.html` | M3 |
+| 课堂大屏 | `/screen/` | M5 |
+| 数据导出 | `/report/` | M3 |
 
-登录成功后：老师跳 `/teacher/home.html`，学生跳 `/student/join.html`。
+登录成功后：老师跳 `/teacher/`，学生跳 `/student/`。
 
 ---
 

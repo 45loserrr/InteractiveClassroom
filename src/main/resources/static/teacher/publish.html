@@ -8,55 +8,51 @@
 </head>
 <body>
 
-<!-- 顶部导航：老师端 -->
 <div class="navbar">
-  <div class="brand">移动互动课堂 · 老师端</div>
+  <div class="brand">移动互动课堂 · 教师端</div>
   <div class="links">
-    <a href="/teacher/home.html">建课</a>
+    <a href="/teacher/">建课</a>
     <a href="/teacher/publish.html" class="active">发题</a>
-    <a href="/screen/index.html" target="_blank">大屏</a>
-    <a href="/report/index.html">数据导出</a>
+    <a href="/screen/" target="_blank">大屏</a>
+    <a href="/report/">数据导出</a>
     <span class="user" id="userName"></span>
     <a href="javascript:logout()">退出</a>
   </div>
 </div>
 
 <div class="container">
-  <h1 class="page-title">发布课堂练习</h1>
-  <p class="page-desc">发一道单选题，学生端会看到题目并提交答案。</p>
+  <h1 class="page-title">发布题目</h1>
+  <p class="page-desc">发一道单选题，学生在答题页选答案。</p>
 
   <div class="card">
-    <h2>题目内容</h2>
-
     <div class="form-row">
       <label for="classroomId">课堂 ID</label>
-      <input class="input" id="classroomId" type="number" placeholder="建课时生成的课堂 id，例如 1">
-      <p class="muted">先在建课页创建课堂，拿到课堂 ID 和口令。</p>
+      <input class="input" id="classroomId" type="number" placeholder="建课后生成的 id，比如 1">
     </div>
 
     <div class="form-row">
-      <label for="title">题干</label>
-      <input class="input" id="title" type="text" placeholder="例如：HTTP 协议默认端口是？">
+      <label for="title">题目</label>
+      <input class="input" id="title" type="text" placeholder="比如：HTTP 默认端口是？">
     </div>
 
     <div class="form-row">
-      <label for="optionA">选项 A</label>
-      <input class="input" id="optionA" type="text" placeholder="例如：80">
+      <label for="optionA">A</label>
+      <input class="input" id="optionA" type="text" placeholder="80">
     </div>
 
     <div class="form-row">
-      <label for="optionB">选项 B</label>
-      <input class="input" id="optionB" type="text" placeholder="例如：443">
+      <label for="optionB">B</label>
+      <input class="input" id="optionB" type="text" placeholder="443">
     </div>
 
     <div class="form-row">
-      <label for="optionC">选项 C</label>
-      <input class="input" id="optionC" type="text" placeholder="例如：8080">
+      <label for="optionC">C</label>
+      <input class="input" id="optionC" type="text" placeholder="8080">
     </div>
 
     <div class="form-row">
-      <label for="optionD">选项 D</label>
-      <input class="input" id="optionD" type="text" placeholder="例如：3306">
+      <label for="optionD">D</label>
+      <input class="input" id="optionD" type="text" placeholder="3306">
     </div>
 
     <div class="form-row">
@@ -69,27 +65,15 @@
       </div>
     </div>
 
-    <button class="btn btn-primary" onclick="publishExercise()">发布题目</button>
-
-    <div id="result" class="notice" style="margin-top: 16px;">
-      还没有发布题目。
-    </div>
+    <button class="btn btn-primary" onclick="publishExercise()">发布</button>
+    <div id="result" class="notice" style="margin-top: 14px;">还没有发布题目</div>
   </div>
 
-  <div class="todo-box">
-    <strong>M2 负责这个页面：</strong><br>
-    1. 后端写 <code>POST /api/exercise</code>，实体和 Mapper 放在
-       <code>entity/Exercise.java</code>、<code>mapper/ExerciseMapper.java</code>。<br>
-    2. 把下面几个输入框拼成：
-       <code>options = "A.80|B.443|C.8080|D.3306"</code>（用竖线分隔）。<br>
-    3. 前端把 <code>publishExercise()</code> 里的 TODO 换成
-       <code>myFetch('/api/exercise', 'POST', {...})</code>，成功后在页面上提示“发布成功”。
-  </div>
+  <p class="muted">M2：后端写 ExerciseController，选项用竖线拼成 A.80|B.443|C.8080|D.3306。</p>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
-  // 只有老师能进这个页面
   var user = checkLogin('teacher');
   if (user) {
     fillUser();
@@ -105,26 +89,22 @@
     var answer = document.querySelector('input[name="answer"]:checked').value;
 
     if (!classroomId || !title || !a || !b || !c || !d) {
-      alert('课堂 ID、题干和四个选项都要填');
+      alert('把课堂 ID、题目和四个选项填完');
       return;
     }
 
-    // 拼成后端约定的格式：A.80|B.443|C.8080|D.3306
     var options = 'A.' + a + '|B.' + b + '|C.' + c + '|D.' + d;
 
-    // ================= TODO（M2 写这里） =================
+    // TODO(M2): 调接口发题
     // var res = await myFetch('/api/exercise', 'POST', {
     //   classroomId: classroomId,
     //   title: title,
     //   options: options,
     //   answer: answer
     // });
-    // if (res.code === 200) {
-    //   document.getElementById('result').innerText = '发布成功，题目 ID：' + res.data.id;
-    // }
-    // =====================================================
+    // document.getElementById('result').innerText = '发布成功，题目 id：' + res.data.id;
 
-    alert('发题接口还没写，M2 请参考页面里的 TODO 完成。');
+    alert('发题接口还没写');
   }
 </script>
 

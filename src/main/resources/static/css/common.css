@@ -1,38 +1,26 @@
-/* ============================================================
-   全站公共样式（PM 维护）
-   组员写页面时直接引用：<link rel="stylesheet" href="/css/common.css">
-   需要额外样式就写在自己页面的 <style> 里，不要改这个文件。
-   ============================================================ */
-
+/* 公共样式，PM 写的，组员页面直接引用 */
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 body {
-  font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
-  background: #f0f4f8;
-  color: #1f2937;
+  margin: 0;
+  background: #f2f2f2;
+  color: #333;
+  font-family: "Microsoft YaHei", Arial, sans-serif;
   font-size: 14px;
-  line-height: 1.6;
 }
 
 a {
-  color: #2563eb;
+  color: #1a73e8;
   text-decoration: none;
 }
 
-a:hover {
-  text-decoration: underline;
-}
-
-/* ---------- 顶部导航 ---------- */
+/* 顶部导航 */
 .navbar {
-  min-height: 56px;
-  padding: 8px 24px;
-  background: #2563eb;
+  background: #1a73e8;
   color: #fff;
+  padding: 10px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -41,16 +29,15 @@ a:hover {
 }
 
 .navbar .brand {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: bold;
-  letter-spacing: 0.5px;
 }
 
 .navbar .links {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 16px;
+  gap: 14px;
   font-size: 14px;
 }
 
@@ -61,122 +48,113 @@ a:hover {
 .navbar .links a:hover,
 .navbar .links a.active {
   color: #fff;
-  font-weight: bold;
-  text-decoration: none;
+  text-decoration: underline;
 }
 
 .navbar .user {
-  color: #bfdbfe;
+  color: #cfe0ff;
   font-size: 13px;
 }
 
-/* ---------- 布局 ---------- */
+/* 页面内容 */
 .container {
-  max-width: 1000px;
-  margin: 24px auto;
-  padding: 0 16px;
+  max-width: 960px;
+  margin: 20px auto;
+  padding: 0 15px;
 }
 
 .page-title {
-  font-size: 22px;
-  margin-bottom: 6px;
+  font-size: 21px;
+  margin: 0 0 6px;
 }
 
 .page-desc {
-  color: #6b7280;
-  margin-bottom: 20px;
+  color: #666;
+  margin: 0 0 18px;
 }
 
 .card {
   background: #fff;
-  border-radius: 12px;
-  padding: 24px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 16px;
 }
 
 .card h2 {
-  font-size: 18px;
-  margin-bottom: 14px;
+  font-size: 17px;
+  margin: 0 0 14px;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
 }
 
-/* ---------- 表单 ---------- */
+/* 表单 */
 .form-row {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .form-row label {
   display: block;
-  margin-bottom: 6px;
-  color: #374151;
-  font-weight: bold;
+  margin-bottom: 5px;
+  color: #444;
 }
 
 .input {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
   background: #fff;
-  color: #1f2937;
+  color: #333;
   font-size: 14px;
   font-family: inherit;
-  outline: none;
 }
 
 .input:focus {
-  border-color: #2563eb;
+  border-color: #1a73e8;
+  outline: none;
 }
 
 textarea.input {
   min-height: 80px;
-  resize: vertical;
 }
 
 .radio-line {
   display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  margin-top: 6px;
+  gap: 16px;
+  margin-top: 5px;
 }
 
 .radio-line label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-weight: normal;
+  gap: 4px;
 }
 
-/* ---------- 按钮 ---------- */
+/* 按钮 */
 .btn {
-  display: inline-block;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 8px;
-  background: #e5e7eb;
-  color: #1f2937;
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #f5f5f5;
+  color: #333;
   font-size: 14px;
   font-family: inherit;
   cursor: pointer;
 }
 
-.btn:hover {
-  filter: brightness(0.97);
-}
-
 .btn-primary {
-  background: #2563eb;
+  background: #1a73e8;
+  border-color: #1a73e8;
   color: #fff;
 }
 
 .btn-primary:hover {
-  background: #1d4ed8;
+  background: #1667c9;
 }
 
 .btn-block {
@@ -184,59 +162,49 @@ textarea.input {
 }
 
 .btn:disabled {
-  opacity: 0.55;
+  background: #ccc;
+  border-color: #ccc;
+  color: #777;
   cursor: not-allowed;
 }
 
-/* ---------- 提示 ---------- */
+/* 提示 */
 .notice {
-  padding: 12px 14px;
-  border-radius: 8px;
-  background: #eff6ff;
-  color: #1e40af;
+  padding: 10px 12px;
+  background: #eef5ff;
+  border: 1px solid #cfe0ff;
+  border-radius: 4px;
+  color: #1a4f9c;
   font-size: 13px;
 }
 
-.notice-warn {
-  background: #fffbeb;
-  color: #92400e;
-}
-
 .notice-ok {
-  background: #ecfdf5;
-  color: #047857;
+  background: #eefaf1;
+  border-color: #bfe8c8;
+  color: #256d36;
 }
 
 .notice-error {
-  background: #fef2f2;
-  color: #b91c1c;
+  background: #fff0f0;
+  border-color: #f3c2c2;
+  color: #a33;
 }
 
 .muted {
-  color: #9ca3af;
+  color: #888;
   font-size: 13px;
 }
 
 .tag {
   display: inline-block;
-  padding: 2px 8px;
-  border-radius: 10px;
-  background: #dbeafe;
-  color: #1d4ed8;
+  padding: 1px 7px;
+  background: #e8f0fe;
+  color: #1a73e8;
+  border-radius: 3px;
   font-size: 12px;
 }
 
-.tag-green {
-  background: #d1fae5;
-  color: #047857;
-}
-
-.tag-orange {
-  background: #ffedd5;
-  color: #c2410c;
-}
-
-/* ---------- 表格 ---------- */
+/* 表格 */
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -245,86 +213,80 @@ textarea.input {
 
 .table th,
 .table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
+  border: 1px solid #ddd;
+  padding: 8px 10px;
   text-align: left;
 }
 
 .table th {
-  background: #f9fafb;
-  color: #374151;
-  font-weight: bold;
+  background: #f7f7f7;
 }
 
-.table tr:hover td {
-  background: #f9fafb;
-}
-
-/* ---------- 登录 / 注册 ---------- */
+/* 登录、注册 */
 .center-page {
   min-height: 100vh;
   padding: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #dbeafe, #eff6ff);
+  background: #e9eef5;
 }
 
 .login-card {
-  width: 380px;
+  width: 360px;
   max-width: 100%;
-  padding: 34px 30px;
+  padding: 28px 26px;
   background: #fff;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid #ddd;
+  border-radius: 6px;
 }
 
 .login-card h1 {
-  margin-bottom: 6px;
-  color: #1e3a8a;
-  font-size: 24px;
+  margin: 0 0 6px;
+  color: #1a4f9c;
+  font-size: 22px;
   text-align: center;
 }
 
 .login-card .subtitle {
-  margin-bottom: 24px;
-  color: #6b7280;
+  margin: 0 0 22px;
+  color: #777;
   font-size: 13px;
   text-align: center;
 }
 
 .login-card .bottom-link {
-  margin-top: 16px;
-  color: #6b7280;
+  margin-top: 14px;
+  color: #666;
   font-size: 13px;
   text-align: center;
 }
 
 .demo-accounts {
-  margin-top: 16px;
-  padding: 10px 12px;
-  background: #f9fafb;
-  border-radius: 8px;
-  color: #6b7280;
+  margin-top: 14px;
+  padding: 9px 10px;
+  background: #f7f7f7;
+  border-radius: 4px;
+  color: #777;
   font-size: 12px;
   line-height: 1.8;
 }
 
-/* ---------- 组员占位提示 ---------- */
+/* 组员 TODO 提示 */
 .todo-box {
-  margin-top: 16px;
-  padding: 16px;
-  border: 1px dashed #93c5fd;
-  border-radius: 10px;
-  background: #eff6ff;
-  color: #1e40af;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px dashed #b9cff0;
+  background: #f5f9ff;
+  border-radius: 4px;
+  color: #1a4f9c;
   font-size: 13px;
   line-height: 1.8;
 }
 
 .todo-box code {
-  padding: 1px 5px;
-  border-radius: 4px;
-  background: #dbeafe;
-  font-family: Consolas, "Courier New", monospace;
+  padding: 1px 4px;
+  background: #e8f0fe;
+  border-radius: 3px;
+  font-family: Consolas, monospace;
 }

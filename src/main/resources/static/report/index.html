@@ -8,30 +8,26 @@
 </head>
 <body>
 
-<!-- 顶部导航：老师端 -->
 <div class="navbar">
-  <div class="brand">移动互动课堂 · 老师端</div>
+  <div class="brand">移动互动课堂 · 教师端</div>
   <div class="links">
-    <a href="/teacher/home.html">建课</a>
+    <a href="/teacher/">建课</a>
     <a href="/teacher/publish.html">发题</a>
-    <a href="/screen/index.html" target="_blank">大屏</a>
-    <a href="/report/index.html" class="active">数据导出</a>
+    <a href="/screen/" target="_blank">大屏</a>
+    <a href="/report/" class="active">数据导出</a>
     <span class="user" id="userName"></span>
     <a href="javascript:logout()">退出</a>
   </div>
 </div>
 
 <div class="container">
-  <h1 class="page-title">签到 / 答题数据</h1>
-  <p class="page-desc">按课堂导出 CSV，直接用 Excel 打开，写实验报告很方便。</p>
+  <h1 class="page-title">数据导出</h1>
+  <p class="page-desc">按课堂导出 CSV，Excel 直接打开。</p>
 
   <div class="card">
-    <h2>导出报表</h2>
-
     <div class="form-row">
       <label for="classroomId">课堂 ID</label>
-      <input class="input" id="classroomId" type="number" placeholder="例如：1">
-      <p class="muted">在建课页创建课堂后，就能看到课堂 ID。</p>
+      <input class="input" id="classroomId" type="number" placeholder="比如：1">
     </div>
 
     <button class="btn btn-primary" onclick="exportReport()">导出 CSV</button>
@@ -39,7 +35,6 @@
 
   <div class="card">
     <h2>数据预览</h2>
-
     <table class="table">
       <thead>
       <tr>
@@ -53,27 +48,17 @@
       </thead>
       <tbody id="tbody">
       <tr>
-        <td colspan="6" class="muted">还没有数据，导出后 Excel 里就是这些列。</td>
+        <td colspan="6" class="muted">导出后 Excel 里就是这几列</td>
       </tr>
       </tbody>
     </table>
   </div>
 
-  <div class="todo-box">
-    <strong>M3 负责这个页面：</strong><br>
-    1. 后端写 <code>GET /api/report/export?classroomId=1</code>，直接返回 CSV 文件，
-       不要返回 JSON。<br>
-    2. CSV 第一行固定是：
-       <code>账号,姓名,签到时间,题目,选择,是否正确</code>，文件开头加 UTF-8 BOM，
-       不然 Excel 打开中文会乱码。<br>
-    3. 前端因为 <code>&lt;a href&gt;</code> 带不了 token 请求头，要用
-       <code>fetch</code> + <code>blob</code> 下载，参考页面里的注释。
-  </div>
+  <p class="muted">M3：后端 ReportController 返回 CSV，前端用 fetch 拿 blob 下载，别用 &lt;a href&gt;。</p>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
-  // 报表是老师看的
   var user = checkLogin('teacher');
   if (user) {
     fillUser();
@@ -82,27 +67,21 @@
   async function exportReport() {
     var classroomId = Number(document.getElementById('classroomId').value);
     if (!classroomId) {
-      alert('请先填写课堂 ID');
+      alert('先填课堂 ID');
       return;
     }
 
-    // ================= TODO（M3 写这里） =================
+    // TODO(M3): 下载 CSV
     // var res = await fetch('/api/report/export?classroomId=' + classroomId, {
     //   headers: { token: localStorage.getItem('token') }
     // });
-    // if (!res.ok) {
-    //   alert('导出失败');
-    //   return;
-    // }
     // var blob = await res.blob();
     // var a = document.createElement('a');
     // a.href = URL.createObjectURL(blob);
-    // a.download = 'classroom_' + classroomId + '_report.csv';
+    // a.download = 'report.csv';
     // a.click();
-    // URL.revokeObjectURL(a.href);
-    // =====================================================
 
-    alert('导出接口还没写，M3 请参考页面里的 TODO 完成。');
+    alert('导出接口还没写');
   }
 </script>
 

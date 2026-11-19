@@ -57,11 +57,11 @@
       localStorage.setItem('realName', res.data.realName || res.data.username);
       localStorage.setItem('userId', res.data.id);
 
-      // 老师去建课页，学生去签到页
+      // 老师去教师端，学生去学生端
       if (res.data.role === 'teacher') {
-        location.href = '/teacher/home.html';
+        location.href = '/teacher/';
       } else {
-        location.href = '/student/join.html';
+        location.href = '/student/';
       }
     }
   }
