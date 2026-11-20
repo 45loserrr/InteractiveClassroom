@@ -1,13 +1,3 @@
-// ============================================================
-// 全站公共 JS（PM 维护，组员直接用，不要复制一份）
-// 页面引入：<script src="/js/common.js"></script>
-//
-// 提供 4 个方法：
-//   myFetch(url, method, data)  发请求，自动带 token、自动提示错误
-//   checkLogin(role)            检查有没有登录，可以限制角色
-//   fillUser()                  把当前用户名填到 id="userName" 的元素里
-//   logout()                    退出登录，回登录页
-// ============================================================
 
 // ---------- 1. 退出登录 ----------
 window.logout = function () {
@@ -15,6 +5,9 @@ window.logout = function () {
   localStorage.removeItem('role');
   localStorage.removeItem('realName');
   localStorage.removeItem('userId');
+  localStorage.removeItem('classroomId');
+  localStorage.removeItem('classroomCode');
+  localStorage.removeItem('classroomName');
   location.replace('/index.html');
 };
 

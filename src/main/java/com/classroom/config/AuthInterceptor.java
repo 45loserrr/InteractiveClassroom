@@ -4,10 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-/**
- * 极简登录拦截器：请求头里带了 token 就放行。
- * 不校验过期时间、不查数据库，只防止“完全没登录”的人乱调接口。
- */
+
 public class AuthInterceptor implements HandlerInterceptor {
 
     @Override

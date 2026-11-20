@@ -14,10 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-/**
- * 登录 / 注册接口。
- * 地址都以 /api/auth 开头，拦截器会放行这一组。
- */
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -25,10 +22,7 @@ public class AuthController {
     @Autowired
     private UserMapper userMapper;
 
-    /**
-     * 登录：账号密码正确就发一个 UUID 当 Token。
-     * 这里不搞 JWT，Token 也不存数据库，前端带着就行（大作业够用）。
-     */
+
     @PostMapping("/login")
     public Result login(@RequestBody User user) {
         String username = user.getUsername() == null ? "" : user.getUsername().trim();
@@ -61,10 +55,7 @@ public class AuthController {
         return Result.ok("登录成功", data);
     }
 
-    /**
-     * 注册：最简单的插入。
-     * role 不填默认 student，realName 不填就用账号名。
-     */
+
     @PostMapping("/register")
     public Result register(@RequestBody User user) {
         String username = user.getUsername() == null ? "" : user.getUsername().trim();

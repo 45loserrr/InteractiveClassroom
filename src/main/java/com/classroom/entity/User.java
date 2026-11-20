@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-/**
- * 用户表实体，对应数据库的 user 表。
- * 字段名是驼峰，数据库是下划线，MyBatis-Plus 会自动转换。
- */
+
 @Data
 @TableName("`user`")
 public class User {
