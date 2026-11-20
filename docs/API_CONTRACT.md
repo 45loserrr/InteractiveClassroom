@@ -3,6 +3,8 @@
 > **因为大家各写各的，接口入参出参必须按照以下格式来，谁改字段名谁负责请全组喝奶茶。**
 >
 > 这份文档就是前后端之间的“合同”。写代码前先看，改代码前先改这里，改完在群里说一声。
+>
+> 模块之间怎么配合、每个人要写到什么程度，看 [MODULE_FLOW.md](MODULE_FLOW.md)。
 
 ## 0. 三句话记住全部规则
 
@@ -84,6 +86,11 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 | role | `teacher` / `student` | 登录成功后 |
 | realName | 姓名 | 登录成功后 |
 | userId | 用户 id（数字） | 登录成功后 |
+| classroomId | 当前课堂 id（数字） | M2 建课后 / M1 签到后 |
+| classroomCode | 当前课堂口令 | M2 建课后 / M1 签到后 |
+| classroomName | 当前课堂名称 | M2 建课后 / M1 签到后 |
+
+退出登录时 `common.js` 会把这些一起清掉。
 
 ### 2.3 没登录会怎样
 
@@ -231,6 +238,8 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 }
 ```
 
+> 返回的 `id` 和 `code` 是后面所有模块的入口：M1 用 code 找课堂，M4/M5/M3 用 id 查数据。
+
 ---
 
 ### 4.4 查课堂列表（M2）
@@ -270,7 +279,9 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 
 学生签到前先用口令找到课堂。
 
-**返回**：和 4.4 的单个对象一样，`data` 是一个对象；查不到返回 400。
+**返回**：和 4.3 的单个对象一样，`data` 是一个对象；查不到返回 400。
+
+> M1 的学生签到页先调这个接口，拿到课堂 id 再去签到。
 
 ```json
 {
@@ -319,6 +330,8 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 ```json
 { "code": 400, "msg": "你已经签到过了", "data": null }
 ```
+
+> 签到成功后，M1 要把 `classroomId`、`classroomCode`、`classroomName` 存到 localStorage，M4 的答题页要用。
 
 ---
 
@@ -376,6 +389,8 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 }
 ```
 
+> 返回的题目 id 是 M4 提交答案时要用的。
+
 ---
 
 ### 4.9 题目列表（M2）
@@ -401,6 +416,8 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 
 > **注意：学生用的题目列表绝对不能返回 `answer` 字段**，不然打开 F12 就作弊了。
 > 对错由 4.10 的答题接口在后台判断。
+>
+> M4 答题页用 `classroomId` 调这个接口，拿到题目 id 后再提交答案。
 
 ---
 
@@ -454,6 +471,7 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
   "msg": "成功",
   "data": {
     "classroomName": "软件工程",
+    "classroomCode": "A1B2C3",
     "studentCount": 3,
     "checkinCount": 2,
     "answerCount": 5,
@@ -464,6 +482,8 @@ token: 3f2a9c1d8b7e4f6a9c0d1e2f3a4b5c6d
 
 | 字段 | 说明 |
 | --- | --- |
+| classroomName | 课堂名称 |
+| classroomCode | 课堂口令，大屏上要显示出来，学生照着输 |
 | studentCount | 学生总人数（user 表里 role = student 的人数） |
 | checkinCount | 本课堂已签到人数 |
 | answerCount | 本课堂已提交的答题总数 |

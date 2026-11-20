@@ -382,6 +382,8 @@ public interface CheckinMapper extends BaseMapper<Checkin> {
 
 ## 六、接口约定（必须遵守）
 
+模块之间怎么配合、每个人要写到什么程度，看 [docs/MODULE_FLOW.md](docs/MODULE_FLOW.md)。
+
 完整内容看 [docs/API_CONTRACT.md](docs/API_CONTRACT.md)，这里记三条：
 
 1. 后端永远返回 `{ "code": 200, "msg": "成功", "data": ... }`，前端只认 `code === 200`。
