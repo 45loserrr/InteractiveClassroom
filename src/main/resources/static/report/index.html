@@ -5,6 +5,187 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>数据导出 - 移动互动课堂</title>
   <link rel="stylesheet" href="/css/common.css">
+  <style>
+    .report-page {
+      max-width: 820px;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .page-header .page-desc {
+      margin-bottom: 0;
+    }
+
+    .step-label {
+      flex: none;
+      color: #1a73e8;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .export-card {
+      padding: 26px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .section-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: #e8f0fe;
+      color: #1a73e8;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+    }
+
+    .classroom-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+    }
+
+    .manual-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .field-help {
+      margin: 7px 0 0;
+      color: #888;
+      font-size: 12px;
+    }
+
+    .selected-classroom {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border: 1px solid #dbe7fb;
+      border-radius: 6px;
+      background: #f6f9ff;
+    }
+
+    .selected-classroom strong {
+      color: #174c99;
+    }
+
+    .selected-classroom .meta {
+      margin-top: 5px;
+      color: #777;
+      font-size: 13px;
+    }
+
+    .export-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    .export-button {
+      min-width: 164px;
+      padding: 10px 22px;
+      font-weight: bold;
+    }
+
+    .export-button[aria-busy="true"] {
+      cursor: wait;
+    }
+
+    .export-status {
+      min-height: 20px;
+      color: #666;
+      font-size: 13px;
+    }
+
+    .status-ok {
+      color: #256d36;
+    }
+
+    .status-error {
+      color: #a33;
+    }
+
+    .empty-state {
+      padding: 18px;
+      border: 1px dashed #d4d9e1;
+      border-radius: 6px;
+      color: #777;
+      background: #fafafa;
+      text-align: center;
+    }
+
+    .info-list {
+      margin: 0;
+      padding-left: 20px;
+      color: #555;
+      line-height: 1.9;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      margin-right: 7px;
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      border-top-color: #fff;
+      border-radius: 50%;
+      vertical-align: -2px;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-header {
+        display: block;
+      }
+
+      .step-label {
+        display: inline-block;
+        margin-top: 10px;
+      }
+
+      .export-card {
+        padding: 20px 16px;
+      }
+
+      .classroom-row,
+      .manual-row {
+        grid-template-columns: 1fr;
+      }
+
+      .export-button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -20,16 +201,341 @@
   </div>
 </div>
 
-<div class="container">
-  <h1 class="page-title">数据导出</h1>
+<div class="container report-page">
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">数据导出</h1>
+      <p class="page-desc">按课堂导出签到与答题记录，CSV 可直接用 Excel 打开。</p>
+    </div>
+    <span class="step-label">M3 · 报表中心</span>
+  </div>
+
+  <section class="card export-card">
+    <div class="section-heading">
+      <span class="section-number">01</span>
+      <h2>选择要导出的课堂</h2>
+    </div>
+
+    <div class="form-row">
+      <label for="classroomSelect">我的课堂</label>
+      <div class="classroom-row">
+        <select class="input" id="classroomSelect">
+          <option value="">正在读取课堂列表…</option>
+        </select>
+        <button class="btn" id="refreshButton" type="button" onclick="loadClassrooms()">刷新列表</button>
+      </div>
+      <p class="field-help" id="listHint">登录老师创建的课堂会自动出现在这里。</p>
+    </div>
+
+    <div class="manual-row">
+      <div class="form-row" style="margin-bottom: 0;">
+        <label for="manualClassroomId">也可以直接填写课堂 ID</label>
+        <input
+          class="input"
+          id="manualClassroomId"
+          type="number"
+          min="1"
+          step="1"
+          inputmode="numeric"
+          placeholder="例如：1"
+          oninput="handleManualInput()"
+        >
+      </div>
+      <button class="btn" type="button" onclick="useSavedClassroom()">使用当前课堂</button>
+    </div>
+
+    <div class="selected-classroom" id="selectedClassroom">
+      <strong>尚未选择课堂</strong>
+      <div class="meta">选择课堂后即可导出该课堂的数据。</div>
+    </div>
+
+    <div class="export-actions">
+      <button class="btn btn-primary export-button" id="exportButton" type="button" onclick="exportReport()">
+        导出 CSV
+      </button>
+      <span class="export-status" id="exportStatus" role="status" aria-live="polite"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-heading">
+      <span class="section-number">02</span>
+      <h2>导出规则</h2>
+    </div>
+    <ul class="info-list">
+      <li>列顺序固定为：账号、姓名、签到时间、题目、选择、是否正确。</li>
+      <li>签到但未答题的学生会保留一行，题目、选择和正确状态留空。</li>
+      <li>文件包含 UTF-8 BOM，使用 Excel 打开时中文不会乱码。</li>
+    </ul>
+  </section>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
-  var user = checkLogin('teacher');
-  if (user) {
+  var currentUser = null;
+  var classrooms = [];
+
+  initReportPage();
+
+  function initReportPage() {
+    currentUser = checkLogin('teacher');
+    if (!currentUser) {
+      return;
+    }
+
     fillUser();
+    useSavedClassroom();
+    loadClassrooms();
   }
+
+  async function loadClassrooms() {
+    var select = document.getElementById('classroomSelect');
+    var refreshButton = document.getElementById('refreshButton');
+    var listHint = document.getElementById('listHint');
+
+    refreshButton.disabled = true;
+    refreshButton.innerText = '加载中…';
+    listHint.innerText = '正在读取课堂列表…';
+
+    var url = '/api/classroom/list?teacherId=' + encodeURIComponent(currentUser.userId);
+    var result = await myFetch(url, 'GET');
+
+    refreshButton.disabled = false;
+    refreshButton.innerText = '刷新列表';
+
+    if (result.code !== 200 || !Array.isArray(result.data)) {
+      classrooms = [];
+      select.innerHTML = '';
+      select.appendChild(new Option('课堂列表暂不可用，请手动填写 ID', ''));
+      listHint.innerText = '课堂列表接口暂不可用时，可以直接填写课堂 ID。';
+      updateSelectedClassroom();
+      return;
+    }
+
+    classrooms = result.data;
+    select.innerHTML = '';
+
+    if (classrooms.length === 0) {
+      select.appendChild(new Option('暂无课堂，请先建课', ''));
+      listHint.innerText = '当前账号还没有创建课堂。';
+      updateSelectedClassroom();
+      return;
+    }
+
+    select.appendChild(new Option('请选择课堂', ''));
+    classrooms.forEach(function (classroom) {
+      var text = classroom.name + '（口令 ' + classroom.code + '，ID ' + classroom.id + '）';
+      select.appendChild(new Option(text, String(classroom.id)));
+    });
+
+    var savedClassroomId = Number(localStorage.getItem('classroomId') || 0);
+    if (savedClassroomId > 0) {
+      var savedOptionExists = Array.prototype.some.call(select.options, function (option) {
+        return option.value === String(savedClassroomId);
+      });
+      if (savedOptionExists) {
+        select.value = String(savedClassroomId);
+        document.getElementById('manualClassroomId').value = '';
+      } else {
+        select.value = '';
+        document.getElementById('manualClassroomId').value = String(savedClassroomId);
+      }
+    }
+
+    listHint.innerText = '共找到 ' + classrooms.length + ' 个课堂。';
+    updateSelectedClassroom();
+  }
+
+  function handleSelectChange() {
+    var selectedValue = document.getElementById('classroomSelect').value;
+    if (selectedValue) {
+      document.getElementById('manualClassroomId').value = '';
+    }
+    updateSelectedClassroom();
+  }
+
+  function handleManualInput() {
+    var manualValue = document.getElementById('manualClassroomId').value;
+    if (manualValue) {
+      document.getElementById('classroomSelect').value = '';
+    }
+    updateSelectedClassroom();
+  }
+
+  function useSavedClassroom() {
+    var savedClassroomId = Number(localStorage.getItem('classroomId') || 0);
+    if (savedClassroomId <= 0) {
+      return;
+    }
+
+    var select = document.getElementById('classroomSelect');
+    var manualInput = document.getElementById('manualClassroomId');
+    var optionExists = Array.prototype.some.call(select.options, function (option) {
+      return option.value === String(savedClassroomId);
+    });
+
+    if (optionExists) {
+      select.value = String(savedClassroomId);
+      manualInput.value = '';
+    } else {
+      select.value = '';
+      manualInput.value = String(savedClassroomId);
+    }
+    updateSelectedClassroom();
+  }
+
+  function getSelectedClassroomId() {
+    var manualValue = document.getElementById('manualClassroomId').value.trim();
+    if (manualValue) {
+      var manualId = Number(manualValue);
+      return Number.isInteger(manualId) && manualId > 0 ? manualId : 0;
+    }
+
+    var selectValue = document.getElementById('classroomSelect').value;
+    var selectId = Number(selectValue);
+    return Number.isInteger(selectId) && selectId > 0 ? selectId : 0;
+  }
+
+  function updateSelectedClassroom() {
+    var classroomId = getSelectedClassroomId();
+    var panel = document.getElementById('selectedClassroom');
+    var classroom = classrooms.find(function (item) {
+      return Number(item.id) === classroomId;
+    });
+
+    if (!classroomId) {
+      panel.innerHTML = '<strong>尚未选择课堂</strong><div class="meta">选择课堂后即可导出该课堂的数据。</div>';
+      return;
+    }
+
+    if (!classroom) {
+      panel.innerHTML = '<strong>课堂 ID：' + classroomId + '</strong><div class="meta">将按此 ID 导出，提交后会由后端校验课堂是否存在。</div>';
+      return;
+    }
+
+    var code = escapeHtml(classroom.code || '');
+    var name = escapeHtml(classroom.name || '未命名课堂');
+    var teacherName = escapeHtml(classroom.teacherName || currentUser.realName || '');
+    panel.innerHTML =
+      '<strong>' + name + '</strong>' +
+      '<div class="meta">课堂 ID：' + classroom.id + '　口令：' + code +
+      (teacherName ? '　老师：' + teacherName : '') +
+      '</div>';
+  }
+
+  async function exportReport() {
+    var classroomId = getSelectedClassroomId();
+    var button = document.getElementById('exportButton');
+    var status = document.getElementById('exportStatus');
+
+    if (!classroomId) {
+      status.className = 'export-status status-error';
+      status.innerText = '请先选择课堂或填写正确的课堂 ID。';
+      return;
+    }
+    if (button.disabled) {
+      return;
+    }
+
+    button.disabled = true;
+    button.setAttribute('aria-busy', 'true');
+    button.innerHTML = '<span class="spinner"></span>正在导出…';
+    status.className = 'export-status';
+    status.innerText = '正在生成 CSV 文件…';
+
+    try {
+      var response = await fetch(
+        '/api/report/export?classroomId=' + encodeURIComponent(classroomId),
+        { headers: { token: localStorage.getItem('token') || '' } }
+      );
+
+      if (!response.ok) {
+        var message = await readErrorMessage(response);
+        if (response.status === 401) {
+          logout();
+        }
+        throw new Error(message);
+      }
+
+      var blob = await response.blob();
+      if (!blob.size) {
+        throw new Error('导出的文件为空');
+      }
+
+      var filename = getDownloadFilename(
+        response.headers.get('Content-Disposition'),
+        'classroom_' + classroomId + '_report.csv'
+      );
+      var downloadUrl = URL.createObjectURL(blob);
+      var link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(function () {
+        URL.revokeObjectURL(downloadUrl);
+      }, 1000);
+
+      status.className = 'export-status status-ok';
+      status.innerText = '导出成功：' + filename + '（' + formatFileSize(blob.size) + '）';
+    } catch (error) {
+      status.className = 'export-status status-error';
+      status.innerText = error.message || '导出失败，请稍后重试。';
+    } finally {
+      button.disabled = false;
+      button.removeAttribute('aria-busy');
+      button.innerText = '导出 CSV';
+    }
+  }
+
+  async function readErrorMessage(response) {
+    try {
+      var result = await response.json();
+      return result.msg || result.message || '导出失败（HTTP ' + response.status + '）';
+    } catch (error) {
+      return '导出失败（HTTP ' + response.status + '）';
+    }
+  }
+
+  function getDownloadFilename(contentDisposition, fallback) {
+    if (!contentDisposition) {
+      return fallback;
+    }
+
+    var utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+    if (utf8Match && utf8Match[1]) {
+      try {
+        return decodeURIComponent(utf8Match[1]);
+      } catch (error) {
+        return fallback;
+      }
+    }
+
+    var normalMatch = contentDisposition.match(/filename="?([^";]+)"?/i);
+    return normalMatch && normalMatch[1] ? normalMatch[1] : fallback;
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024) {
+      return bytes + ' B';
+    }
+    if (bytes < 1024 * 1024) {
+      return (bytes / 1024).toFixed(1) + ' KB';
+    }
+    return (bytes / 1024 / 1024).toFixed(1) + ' MB';
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  document.getElementById('classroomSelect').addEventListener('change', handleSelectChange);
 </script>
 
 </body>

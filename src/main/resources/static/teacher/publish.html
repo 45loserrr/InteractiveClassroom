@@ -5,6 +5,62 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>发题 - 移动互动课堂</title>
   <link rel="stylesheet" href="/css/common.css">
+  <style>
+    /* 只作用于本页面 */
+    .option-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .option-letter {
+      width: 28px;
+      height: 28px;
+      line-height: 26px;
+      text-align: center;
+      border: 1px solid #b9cef0;
+      border-radius: 50%;
+      color: #1a4f9c;
+      font-weight: bold;
+      flex: none;
+    }
+    .option-row .input {
+      flex: 1;
+    }
+    .answer-line {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .answer-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      background: #fafafa;
+    }
+    .answer-item.checked {
+      border-color: #1a73e8;
+      background: #eef5ff;
+      color: #1a4f9c;
+    }
+    .title-cell {
+      max-width: 320px;
+      word-break: break-all;
+    }
+    .option-cell {
+      color: #555;
+      font-size: 13px;
+    }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+  </style>
 </head>
 <body>
 
@@ -22,13 +78,338 @@
 
 <div class="container">
   <h1 class="page-title">发题</h1>
+  <p class="page-desc">选一节课堂，填好题干和四个选项就能发出去，学生答题页会立刻看到。</p>
+
+  <div class="card">
+    <h2>选择课堂</h2>
+    <div class="form-row">
+      <label for="classroomSelect">要发到哪节课</label>
+      <select class="input" id="classroomSelect" onchange="onClassroomChange()">
+      </select>
+    </div>
+    <p class="notice" id="noClassroomTip" style="display: none;">
+      你还没有建过课，先去 <a href="/teacher/">建课页</a> 建一节再回来发题。
+    </p>
+  </div>
+
+  <div class="card">
+    <h2>新题目</h2>
+
+    <div class="form-row">
+      <label for="title">题干</label>
+      <textarea class="input" id="title" maxlength="500" placeholder="例如：HTTP 协议默认端口是？"></textarea>
+    </div>
+
+    <div class="form-row">
+      <label>选项（四个都要填）</label>
+      <div class="option-row">
+        <span class="option-letter">A</span>
+        <input class="input" id="optionA" type="text" maxlength="100" placeholder="例如：80">
+      </div>
+      <div class="option-row">
+        <span class="option-letter">B</span>
+        <input class="input" id="optionB" type="text" maxlength="100" placeholder="例如：443">
+      </div>
+      <div class="option-row">
+        <span class="option-letter">C</span>
+        <input class="input" id="optionC" type="text" maxlength="100" placeholder="例如：8080">
+      </div>
+      <div class="option-row">
+        <span class="option-letter">D</span>
+        <input class="input" id="optionD" type="text" maxlength="100" placeholder="例如：3306">
+      </div>
+    </div>
+
+    <div class="form-row">
+      <label>正确答案</label>
+      <div class="answer-line" id="answerLine">
+        <label class="answer-item" onclick="pickAnswer('A')">
+          <input type="radio" name="answer" value="A" id="ansA" onchange="syncAnswer()"> A
+        </label>
+        <label class="answer-item" onclick="pickAnswer('B')">
+          <input type="radio" name="answer" value="B" id="ansB" onchange="syncAnswer()"> B
+        </label>
+        <label class="answer-item" onclick="pickAnswer('C')">
+          <input type="radio" name="answer" value="C" id="ansC" onchange="syncAnswer()"> C
+        </label>
+        <label class="answer-item" onclick="pickAnswer('D')">
+          <input type="radio" name="answer" value="D" id="ansD" onchange="syncAnswer()"> D
+        </label>
+      </div>
+      <p class="muted" style="margin-top: 8px;">答案只存后端，学生端的题目列表里不会出现，防止学生看答案作弊。</p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="publishBtn" onclick="publishExercise()">发布题目</button>
+    </div>
+    <div class="notice notice-ok" id="publishTip" style="display: none; margin-top: 12px;"></div>
+  </div>
+
+  <div class="card">
+    <h2>本课堂已发的题目</h2>
+    <table class="table">
+      <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>题干</th>
+        <th style="width: 320px;">选项</th>
+      </tr>
+      </thead>
+      <tbody id="listBody"></tbody>
+    </table>
+    <p class="muted" id="emptyTip" style="margin-top: 10px;">正在加载…</p>
+  </div>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
   var user = checkLogin('teacher');
-  if (user) {
-    fillUser();
+  if (!user) {
+    throw new Error('未登录或不是老师');
+  }
+  fillUser();
+
+  var selectedClassroomId = 0;
+  var publishBtn = document.getElementById('publishBtn');
+  var publishing = false;
+
+  init();
+
+  async function init() {
+    // 先加载课堂下拉框，再按当前选中课堂加载题目
+    await loadClassrooms();
+  }
+
+  async function loadClassrooms() {
+    var res = await myFetch('/api/classroom/list?teacherId=' + user.userId, 'GET');
+    if (res.code !== 200) {
+      return;
+    }
+
+    var rows = res.data || [];
+    var select = document.getElementById('classroomSelect');
+    var tip = document.getElementById('noClassroomTip');
+
+    if (rows.length === 0) {
+      select.innerHTML = '<option value="">（还没有课堂）</option>';
+      select.disabled = true;
+      tip.style.display = 'block';
+      publishBtn.disabled = true;
+      document.getElementById('emptyTip').innerText = '还没有课堂，先建课。';
+      return;
+    }
+
+    tip.style.display = 'none';
+    publishBtn.disabled = false;
+    select.disabled = false;
+
+    // 默认选中：地址栏 classroomId > 上次用的课堂 > 第一节课
+    var fromUrl = Number(getQuery('classroomId') || 0);
+    var fromStorage = Number(localStorage.getItem('classroomId') || 0);
+    var picked = 0;
+
+    var html = '';
+    var ids = [];
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      var label = row.name + '（口令 ' + row.code + '）';
+      html += '<option value="' + row.id + '">' + escapeHtml(label) + '</option>';
+      ids.push(row.id);
+    }
+
+    // 优先级：地址栏 classroomId > 上次用过的课堂 > 列表第一节课
+    if (ids.indexOf(fromUrl) >= 0) {
+      picked = fromUrl;
+    } else if (ids.indexOf(fromStorage) >= 0) {
+      picked = fromStorage;
+    } else {
+      picked = ids[0];
+    }
+
+    select.innerHTML = html;
+    select.value = String(picked);
+    selectedClassroomId = picked;
+    localStorage.setItem('classroomId', picked);
+
+    await loadExercises();
+  }
+
+  function onClassroomChange() {
+    var select = document.getElementById('classroomSelect');
+    selectedClassroomId = Number(select.value || 0);
+    if (selectedClassroomId) {
+      localStorage.setItem('classroomId', selectedClassroomId);
+    }
+    document.getElementById('publishTip').style.display = 'none';
+    loadExercises();
+  }
+
+  async function loadExercises() {
+    var tbody = document.getElementById('listBody');
+    var emptyTip = document.getElementById('emptyTip');
+
+    if (!selectedClassroomId) {
+      tbody.innerHTML = '';
+      emptyTip.innerText = '先选一节课。';
+      return;
+    }
+
+    var res = await myFetch('/api/exercise/list?classroomId=' + selectedClassroomId, 'GET');
+    if (res.code !== 200) {
+      return;
+    }
+
+    var rows = res.data || [];
+    if (rows.length === 0) {
+      tbody.innerHTML = '';
+      emptyTip.innerText = '这节课还没发过题，发一道试试。';
+      return;
+    }
+
+    emptyTip.innerText = '共 ' + rows.length + ' 道题。';
+    var html = '';
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      var options = (row.options || '').split('|').join('   ');
+      html += '<tr>' +
+        '<td>' + row.id + '</td>' +
+        '<td class="title-cell">' + escapeHtml(row.title) + '</td>' +
+        '<td class="option-cell">' + escapeHtml(options) + '</td>' +
+        '</tr>';
+    }
+    tbody.innerHTML = html;
+  }
+
+  // 点整块选答案，视觉上跟着变蓝，避免只点小圆点不好点
+  function pickAnswer(letter) {
+    var radio = document.getElementById('ans' + letter);
+    if (radio) {
+      radio.checked = true;
+      syncAnswer();
+    }
+  }
+
+  function syncAnswer() {
+    var letters = ['A', 'B', 'C', 'D'];
+    for (var i = 0; i < letters.length; i++) {
+      var item = document.getElementById('ans' + letters[i]).parentNode;
+      if (document.getElementById('ans' + letters[i]).checked) {
+        item.classList.add('checked');
+      } else {
+        item.classList.remove('checked');
+      }
+    }
+  }
+
+  function getCheckedAnswer() {
+    var letters = ['A', 'B', 'C', 'D'];
+    for (var i = 0; i < letters.length; i++) {
+      if (document.getElementById('ans' + letters[i]).checked) {
+        return letters[i];
+      }
+    }
+    return '';
+  }
+
+  async function publishExercise() {
+    if (publishing) {
+      return;
+    }
+    if (!selectedClassroomId) {
+      alert('先选一节课');
+      return;
+    }
+
+    var title = document.getElementById('title').value.trim();
+    if (!title) {
+      alert('题干不能为空');
+      document.getElementById('title').focus();
+      return;
+    }
+
+    var letters = ['A', 'B', 'C', 'D'];
+    var options = [];
+    for (var i = 0; i < letters.length; i++) {
+      var letter = letters[i];
+      var value = document.getElementById('option' + letter).value.trim();
+      if (!value) {
+        alert('选项 ' + letter + ' 还没填，四个选项都要填');
+        document.getElementById('option' + letter).focus();
+        return;
+      }
+      options.push(letter + '.' + value);
+    }
+    // 契约规定选项用竖线拼成一个字符串
+    var optionsText = options.join('|');
+
+    var answer = getCheckedAnswer();
+    if (!answer) {
+      alert('请选一个正确答案');
+      return;
+    }
+
+    // 防连点
+    publishing = true;
+    publishBtn.disabled = true;
+    publishBtn.innerText = '发布中…';
+
+    var res = await myFetch('/api/exercise', 'POST', {
+      classroomId: selectedClassroomId,
+      title: title,
+      options: optionsText,
+      answer: answer
+    });
+
+    publishing = false;
+    publishBtn.disabled = false;
+    publishBtn.innerText = '发布题目';
+
+    if (res.code !== 200) {
+      return;
+    }
+
+    var tip = document.getElementById('publishTip');
+    tip.className = 'notice notice-ok';
+    tip.innerText = '发布成功，题目 id 是 ' + res.data.id + '，学生答题页刷新就能看到。';
+    tip.style.display = 'block';
+
+    // 清空刚填的内容，课堂选择保留，方便连着发下一题
+    document.getElementById('title').value = '';
+    for (var j = 0; j < letters.length; j++) {
+      document.getElementById('option' + letters[j]).value = '';
+    }
+    for (var k = 0; k < letters.length; k++) {
+      document.getElementById('ans' + letters[k]).checked = false;
+    }
+    syncAnswer();
+
+    loadExercises();
+  }
+
+  function getQuery(name) {
+    var search = location.search.substring(1);
+    if (!search) {
+      return '';
+    }
+    var parts = search.split('&');
+    for (var i = 0; i < parts.length; i++) {
+      var pair = parts[i].split('=');
+      if (decodeURIComponent(pair[0]) === name) {
+        return decodeURIComponent(pair[1] || '');
+      }
+    }
+    return '';
+  }
+
+  function escapeHtml(text) {
+    if (text === null || text === undefined) {
+      return '';
+    }
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 </script>
 

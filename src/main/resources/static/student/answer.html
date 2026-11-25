@@ -20,13 +20,79 @@
 
 <div class="container">
   <h1 class="page-title">答题</h1>
+  <p class="page-desc">选择答案后提交，对错由系统判定。</p>
+  <div id="list"></div>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
   var user = checkLogin('student');
-  if (user) {
+  if (!user) {
+    // checkLogin 已经跳走了
+  } else {
     fillUser();
+    loadExercises();
+  }
+
+  // 1. 读 classroomId，没有就提示先签到；有就拉题目列表
+  async function loadExercises() {
+    var box = document.getElementById('list');
+    var classroomId = Number(localStorage.getItem('classroomId') || 0);
+    if (!classroomId) {
+      box.innerHTML = '<div class="notice notice-error">你还没有签到，请先<a href="/student/">去签到</a>。</div>';
+      return;
+    }
+
+    var res = await myFetch('/api/exercise/list?classroomId=' + classroomId, 'GET');
+    if (res.code !== 200) return;
+
+    var list = res.data || [];
+    if (list.length === 0) {
+      box.innerHTML = '<div class="notice">老师还没有发题，请稍后再来。</div>';
+      return;
+    }
+
+    var html = '';
+    for (var i = 0; i < list.length; i++) {
+      var q = list[i];
+      html += '<div class="card">';
+      html += '<h2>' + (i + 1) + '. ' + q.title + '</h2>';
+      var opts = (q.options || '').split('|');
+      for (var j = 0; j < opts.length; j++) {
+        // 形如 A.80，取第一个字符当选项值（去掉空格、统一大写）
+        var val = opts[j].trim().charAt(0).toUpperCase();
+        html += '<label class="form-row" style="display:flex;align-items:center;gap:6px;">' +
+                '<input type="radio" name="q' + q.id + '" value="' + val + '"> ' + opts[j] +
+                '</label>';
+      }
+      html += '<button class="btn btn-primary" onclick="submitAnswer(' + q.id + ')">提交</button>';
+      html += ' <span id="result' + q.id + '"></span>';
+      html += '</div>';
+    }
+    box.innerHTML = html;
+  }
+
+  // 2. 提交答案
+  async function submitAnswer(exerciseId) {
+    var checked = document.querySelector('input[name="q' + exerciseId + '"]:checked');
+    if (!checked) {
+      alert('请先选一个答案');
+      return;
+    }
+    var res = await myFetch('/api/answer', 'POST', {
+      exerciseId: exerciseId,
+      studentId: Number(localStorage.getItem('userId') || 0),
+      chooseOption: checked.value
+    });
+    if (res.code !== 200) return; // 重复提交等错误，myFetch 已经 alert 过了
+
+    var tip = document.getElementById('result' + exerciseId);
+    if (res.data.correct) {
+      tip.innerHTML = '<span class="tag" style="color:#256d36;background:#eefaf1">答对了！</span>';
+    } else {
+      tip.innerHTML = '<span class="tag" style="color:#a33;background:#fff0f0">答错了，正确答案是 ' +
+                      res.data.rightAnswer + '</span>';
+    }
   }
 </script>
 

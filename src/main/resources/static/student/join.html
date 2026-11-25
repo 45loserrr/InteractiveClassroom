@@ -20,13 +20,80 @@
 
 <div class="container">
   <h1 class="page-title">签到</h1>
+
+  <form id="joinForm" class="card">
+    <div class="form-row">
+      <label for="classroomCode">课堂口令</label>
+      <input
+        id="classroomCode"
+        class="input"
+        placeholder="请输入老师提供的 6 位口令"
+        autocomplete="off"
+        required
+      >
+    </div>
+
+    <button id="joinButton" type="submit" class="btn btn-primary">签到</button>
+    <p id="checkinMessage" role="status"></p>
+    <a id="answerLink" href="/student/answer.html" hidden>去答题</a>
+  </form>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
-  var user = checkLogin('student');
+  const user = checkLogin('student');
+
   if (user) {
     fillUser();
+
+    const form = document.getElementById('joinForm');
+    const input = document.getElementById('classroomCode');
+    const button = document.getElementById('joinButton');
+    const message = document.getElementById('checkinMessage');
+    const answerLink = document.getElementById('answerLink');
+
+    form.addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const code = input.value.trim().toUpperCase();
+      if (!/^[A-Z0-9]{6}$/.test(code)) {
+        message.textContent = '请输入 6 位字母或数字组成的课堂口令';
+        return;
+      }
+
+      button.disabled = true;
+      message.textContent = '';
+
+      try {
+        // 先用口令查课，拿到课堂 ID。
+        const lookup = await myFetch(
+          '/api/classroom/byCode?code=' + encodeURIComponent(code)
+        );
+        if (lookup.code !== 200) {
+          return;
+        }
+
+        // 再用课堂 ID 和当前学生 ID 提交签到。
+        const classroom = lookup.data;
+        const checkin = await myFetch('/api/checkin', 'POST', {
+          classroomId: classroom.id,
+          studentId: user.userId
+        });
+        if (checkin.code !== 200) {
+          return;
+        }
+
+        // 签到成功后，保存答题页需要的课堂信息。
+        localStorage.setItem('classroomId', classroom.id);
+        localStorage.setItem('classroomCode', classroom.code);
+        localStorage.setItem('classroomName', classroom.name);
+
+        message.textContent = '签到成功：' + classroom.name;
+        answerLink.hidden = false;
+      } finally {
+        button.disabled = false;
+      }
+    });
   }
 </script>
 

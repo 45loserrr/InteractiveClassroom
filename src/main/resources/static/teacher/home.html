@@ -5,6 +5,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>建课 - 移动互动课堂</title>
   <link rel="stylesheet" href="/css/common.css">
+  <style>
+    /* 只作用于本页面，不改 PM 的 common.css */
+    .code-box {
+      margin: 6px 0 14px;
+      padding: 18px 12px;
+      background: #f6f9ff;
+      border: 1px dashed #b9cef0;
+      border-radius: 6px;
+      text-align: center;
+    }
+    .code-text {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 44px;
+      font-weight: bold;
+      letter-spacing: 10px;
+      color: #1a4f9c;
+      user-select: all;
+    }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .code-cell {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 16px;
+      letter-spacing: 2px;
+      color: #1a4f9c;
+    }
+    .empty-tip {
+      color: #888;
+      font-size: 13px;
+      margin: 10px 0 0;
+    }
+  </style>
 </head>
 <body>
 
@@ -22,13 +57,223 @@
 
 <div class="container">
   <h1 class="page-title">建课</h1>
+  <p class="page-desc">填好课程名称就能生成 6 位课堂口令，学生用这个口令在学生端签到。</p>
+
+  <div class="card">
+    <h2>新建课堂</h2>
+    <div class="form-row">
+      <label for="name">课程名称</label>
+      <input class="input" id="name" type="text" maxlength="100" placeholder="例如：软件工程">
+    </div>
+    <p class="muted">口令由系统随机生成，6 位大写字母和数字，不会重复。</p>
+    <div class="btn-row" style="margin-top: 12px;">
+      <button class="btn btn-primary" id="createBtn" onclick="createClassroom()">生成课堂口令</button>
+    </div>
+  </div>
+
+  <div class="card" id="resultCard" style="display: none;">
+    <h2>课堂创建成功</h2>
+    <p class="muted" id="resultName">课程名称</p>
+    <div class="code-box">
+      <div class="code-text" id="codeText">------</div>
+      <div class="muted">把这个口令投给学生，或让学生直接输到学生端</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="copyCode()">复制口令</button>
+      <button class="btn btn-primary" onclick="goPublish()">去发题</button>
+      <a class="btn" href="/screen/" target="_blank">打开大屏</a>
+    </div>
+    <div class="notice notice-ok" id="copyTip" style="display: none; margin-top: 12px;">口令已复制到剪贴板</div>
+  </div>
+
+  <div class="card">
+    <h2>我建的课堂</h2>
+    <table class="table">
+      <thead>
+      <tr>
+        <th style="width: 60px;">#</th>
+        <th>课程名称</th>
+        <th style="width: 200px;">课堂口令</th>
+        <th style="width: 200px;">操作</th>
+      </tr>
+      </thead>
+      <tbody id="listBody"></tbody>
+    </table>
+    <p class="empty-tip" id="emptyTip" style="display: none;">还没有建过课，先在上面建一个吧。</p>
+  </div>
 </div>
 
 <script src="/js/common.js"></script>
 <script>
   var user = checkLogin('teacher');
-  if (user) {
-    fillUser();
+  if (!user) {
+    // checkLogin 已经把页面跳走了，这里直接停住
+    throw new Error('未登录或不是老师');
+  }
+  fillUser();
+
+  var currentClassroomId = 0;
+  var currentCode = '';
+  var createBtn = document.getElementById('createBtn');
+  var copying = false;
+
+  loadList();
+
+  // 建课
+  async function createClassroom() {
+    var nameInput = document.getElementById('name');
+    var name = nameInput.value.trim();
+
+    if (!name) {
+      alert('课程名称不能为空');
+      nameInput.focus();
+      return;
+    }
+
+    // 防连点：请求没回来之前按钮不可再点
+    createBtn.disabled = true;
+    createBtn.innerText = '生成中…';
+
+    var res = await myFetch('/api/classroom', 'POST', {
+      name: name,
+      teacherId: user.userId
+    });
+
+    createBtn.disabled = false;
+    createBtn.innerText = '生成课堂口令';
+
+    if (res.code !== 200) {
+      // myFetch 已经 alert 过 msg，这里不再重复弹
+      return;
+    }
+
+    var data = res.data;
+    currentClassroomId = data.id;
+    currentCode = data.code;
+
+    // 记下当前课堂，发题页和大屏页可以直接用
+    localStorage.setItem('classroomId', data.id);
+    localStorage.setItem('classroomCode', data.code);
+
+    document.getElementById('codeText').innerText = data.code;
+    document.getElementById('resultName').innerText = data.name + '（课堂 id：' + data.id + '）';
+    document.getElementById('copyTip').style.display = 'none';
+    document.getElementById('resultCard').style.display = 'block';
+
+    nameInput.value = '';
+    loadList();
+  }
+
+  // 课堂列表
+  async function loadList() {
+    var res = await myFetch('/api/classroom/list?teacherId=' + user.userId, 'GET');
+    if (res.code !== 200) {
+      return;
+    }
+
+    var rows = res.data || [];
+    var tbody = document.getElementById('listBody');
+    var emptyTip = document.getElementById('emptyTip');
+
+    if (rows.length === 0) {
+      tbody.innerHTML = '';
+      emptyTip.style.display = 'block';
+      return;
+    }
+
+    emptyTip.style.display = 'none';
+    var html = '';
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      html += '<tr>' +
+        '<td>' + row.id + '</td>' +
+        '<td>' + escapeHtml(row.name) + '</td>' +
+        '<td><span class="code-cell">' + escapeHtml(row.code) + '</span></td>' +
+        '<td>' +
+        '<button class="btn" onclick="copyRowCode(\'' + escapeHtml(row.code) + '\')">复制</button> ' +
+        '<button class="btn btn-primary" onclick="openPublish(' + row.id + ')">去发题</button>' +
+        '</td>' +
+        '</tr>';
+    }
+    tbody.innerHTML = html;
+  }
+
+  // 复制口令：优先用剪贴板 API，不行就退回 textarea + execCommand
+  async function copyText(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (e) {
+        // 下面还有兜底，忽略即可
+      }
+    }
+    try {
+      var textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(textarea);
+      return ok;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async function copyCode() {
+    if (!currentCode || copying) {
+      return;
+    }
+    copying = true;
+    var ok = await copyText(currentCode);
+    copying = false;
+
+    var tip = document.getElementById('copyTip');
+    tip.style.display = 'block';
+    if (!ok) {
+      tip.className = 'notice notice-error';
+      tip.innerText = '自动复制失败，请手动选中上面的口令复制';
+    } else {
+      tip.className = 'notice notice-ok';
+      tip.innerText = '口令已复制到剪贴板';
+    }
+    setTimeout(function () {
+      tip.style.display = 'none';
+    }, 3000);
+  }
+
+  async function copyRowCode(code) {
+    var ok = await copyText(code);
+    if (!ok) {
+      alert('自动复制失败，请手动选中口令复制：' + code);
+    }
+  }
+
+  function goPublish() {
+    if (!currentClassroomId) {
+      return;
+    }
+    location.href = '/teacher/publish.html?classroomId=' + currentClassroomId;
+  }
+
+  function openPublish(classroomId) {
+    localStorage.setItem('classroomId', classroomId);
+    location.href = '/teacher/publish.html?classroomId=' + classroomId;
+  }
+
+  // 简单转义，防止课程名里带尖括号把页面搞乱
+  function escapeHtml(text) {
+    if (text === null || text === undefined) {
+      return '';
+    }
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 </script>
 

@@ -2,15 +2,75 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>课堂大屏 - 移动互动课堂</title>
+  <title>课堂大屏</title>
   <link rel="stylesheet" href="/css/common.css">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #123;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    .big { font-size: 80px; color: #ffd54f; }
+    .nums { display: flex; gap: 80px; margin-top: 50px; }
+    .nums div { text-align: center; }
+    .num { font-size: 60px; color: #4fc3f7; }
+    .cap { font-size: 20px; color: #ccc; margin-top: 8px; }
+    .bars { width: 600px; margin-top: 50px; }
+    .bar { height: 30px; background: #4fc3f7; margin: 6px 0; }
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <h1 class="page-title">课堂大屏</h1>
+<p style="font-size:24px">课堂口令</p>
+<div class="big" id="code">------</div>
+<p id="className"></p>
+
+<div class="nums">
+  <div><div class="num" id="checkinCount">0</div><div class="cap">已签到</div></div>
+  <div><div class="num" id="answerCount">0</div><div class="cap">已答题</div></div>
+  <div><div class="num" id="studentCount">0</div><div class="cap">学生总数</div></div>
 </div>
+
+<div class="bars" id="bars"></div>
+
+<script src="/js/common.js"></script>
+<script>
+  checkLogin();
+  var classroomId = new URLSearchParams(location.search).get('classroomId')
+          || localStorage.getItem('classroomId');
+
+  async function load() {
+    if (!classroomId) return;
+    var res = await myFetch('/api/screen/stats?classroomId=' + classroomId, 'GET');
+    if (res.code !== 200) return;
+    var d = res.data;
+
+    document.getElementById('code').innerText = d.classroomCode || '------';
+    document.getElementById('className').innerText = d.classroomName || '';
+    document.getElementById('checkinCount').innerText = d.checkinCount;
+    document.getElementById('answerCount').innerText = d.answerCount;
+    document.getElementById('studentCount').innerText = d.studentCount;
+
+    var opts = d.optionCount || {};
+    var max = Math.max(opts.A || 0, opts.B || 0, opts.C || 0, opts.D || 0);
+    var html = '';
+    ['A', 'B', 'C', 'D'].forEach(function (op) {
+      var n = opts[op] || 0;
+      var w = max > 0 ? (n / max * 100) : 0;
+      html += '<p>' + op + '：' + n + '</p>'
+              + '<div class="bar" style="width:' + w + '%"></div>';
+    });
+    document.getElementById('bars').innerHTML = html;
+  }
+
+  load();
+  setInterval(load, 3000);
+</script>
 
 </body>
 </html>
