@@ -1,170 +1,174 @@
-# 下周任务分配（每人 3 个模块）
+# 三周安排与下周任务（每人共 3 个模块）
 
-老师要求每个人负责 3 个模块。本轮不再给 PM 排新模块，PM 已有的框架、登录鉴权、公共 JS/CSS 不再重复计入。
+老师要求每人一共交 **3 个模块**，之前做完的也算。不是每人再新做 3 个。
 
-下周目标：每人交 3 个**能演示的最小版本**。全部基于现有 5 张表，不新增表、不换技术栈、不引入 Vue/Node/Redis；现有主流程不能坏。
+- 5 个组员 × 3 个模块 = 15 个模块；
+- 现在已经有 6 个：建课、发题、签到、答题、大屏、数据导出；
+- 还需要新增 9 个；
+- 本轮不给 PM 排新模块，PM 的框架、登录鉴权、公共 JS/CSS 不计入这 15 个。
 
-## 一、总表
+距离 12 月 20 日还有三周：
 
-| 成员 | 模块 1 | 模块 2 | 模块 3 |
+- 第 1 周：11/30 – 12/06
+- 第 2 周：12/07 – 12/13
+- 第 3 周：12/14 – 12/20
+
+## 一、模块盘点
+
+| 成员 | 已有模块（计入 3 个） | 还需要新增 | 下周先做 |
 | --- | --- | --- | --- |
-| 陈嘉（M2） | 建课与课堂管理 | 发题与题目管理 | 题库复用 |
-| 于文博（M1） | 进课签到 | 我的签到记录 | 签到统计 |
-| 刘子瑜（M4） | 在线答题 | 我的答题记录与成绩 | 错题本 |
-| 张宇轩（M5） | 实时统计大屏 | 课堂排行榜 | 大屏显示设置 |
-| 郭曦（M3） | CSV 导出 | 报表筛选与预览 | 统计图表 |
+| 陈嘉（M2） | 建课、发题 | 题库管理（1 个） | 题库管理 |
+| 于文博（M1） | 签到 | 我的签到记录、签到统计（2 个） | 我的签到记录 |
+| 刘子瑜（M4） | 答题 | 我的答题记录/成绩、错题本（2 个） | 我的答题记录/成绩 |
+| 张宇轩（M5） | 大屏 | 排行榜、大屏显示设置（2 个） | 排行榜 |
+| 郭曦（M3） | 数据导出 | 报表筛选/预览、统计图表（2 个） | 报表筛选/预览 |
 
-## 二、每个人具体做什么
+目标：**12/13 之前每人 3 个模块全部完成并 push**。第 3 周只修 bug、联调、准备演示，不再加新功能。
 
-### 陈嘉（M2）：教师端 3 个模块
+## 二、下周（11/30 – 12/06）总任务
 
-**模块 1：建课与课堂管理**
+下周只做两件事：
 
-- 保留现有：建课、6 位口令、课堂列表、按口令查课。
-- 新增：
-  - 课堂列表按课程名/口令搜索；
-  - 删除课堂（弹窗确认），删除时连同该课堂的题目、签到、答题一起清理；
-  - 删除要用 `@Transactional`，避免只删一半。
-- 接口：现有 `POST /api/classroom`、`GET /api/classroom/list`、`GET /api/classroom/byCode`；新增 `DELETE /api/classroom/{id}`。
-- 文件：`teacher/home.html`、`ClassroomController.java`、`ClassroomMapper.java`；删除关联数据时可以调用 M1/M4 的 Mapper，但不要改他们的文件。
-- 验收：建两个课，删掉其中一个，另一个的签到/题目/答题不受影响。
+1. 修之前代码里的 P0 bug；
+2. 每人完成自己的**第一个新增模块**。
 
-**模块 2：发题与题目管理**
-
-- 保留现有：发布单选、题目列表（不返回 `answer`）。
-- 新增：
-  - 编辑题干、选项、正确答案；
-  - 删除题目（同时删除这道题的答题记录）；
-  - 题目列表按题干搜索。
-- 接口：现有 `POST /api/exercise`、`GET /api/exercise/list`；新增 `PUT /api/exercise/{id}`、`DELETE /api/exercise/{id}`。
-- 文件：`teacher/publish.html`、`ExerciseController.java`、`ExerciseMapper.java`。
-- 验收：改一道题的答案后，学生重新答题能按新答案判分；删题后答题记录一起消失。
-
-**模块 3：题库复用**
-
-- 新增：把一道题复制到另一个课堂，选项和答案原样带过去。
-- 接口：`POST /api/exercise/copy`，请求 `{ exerciseId, targetClassroomId }`，返回新题目 id。
-- 文件：`ExerciseController.java`、`teacher/publish.html`。
-- 验收：A 课堂的题复制到 B 课堂，B 课堂的题目列表能看到，答案不变。
-
-### 于文博（M1）：学生签到 3 个模块
-
-**模块 1：进课签到**
-
-- 保留现有：输入口令查课、签到、重复签到拦截、保存 `classroomId`。
-- 要求：不要破坏现有签到接口和页面。
-
-**模块 2：我的签到记录**
-
-- 新增：学生查看自己签过哪些课、签到时间。
-- 接口：`GET /api/checkin/my?studentId=2`，返回课堂名称、课堂口令、签到时间。
-- 页面：`student/join.html` 增加“我的签到记录”区域或标签页。
-- 文件：`CheckinController.java`、`CheckinMapper.java`、`student/join.html`；课堂名可以调用 M2 的 `ClassroomMapper`，不要改。
-- 验收：stu01 签两节课，记录里两节都能看到，时间正确。
-
-**模块 3：签到统计**
-
-- 新增：学生个人签到统计：总签到次数、最近一次签到时间、最近签到课堂。
-- 接口：`GET /api/checkin/my/stats?studentId=2`。
-- 页面：`student/join.html` 显示三个数字卡片。
-- 文件：`CheckinController.java`、`CheckinMapper.java`、`student/join.html`。
-- 验收：签到后数字加一；重复签到不重复计数。
-
-### 刘子瑜（M4）：学生答题 3 个模块
-
-**模块 1：在线答题**
-
-- 保留现有：加载题目、选项、提交、后端判题、重复提交拦截。
-- 要求：现有答题流程不能坏。
-
-**模块 2：我的答题记录与成绩**
-
-- 新增：学生查看答过的题、自己的选择、对错、正确率。
-- 接口：`GET /api/answer/my?studentId=2`，返回题目、选项、选择、正确答案、是否正确。
-- 页面：`student/answer.html` 增加“我的记录”标签页。
-- 文件：`AnswerController.java`、`AnswerMapper.java`、`student/answer.html`；题目信息调用 M2 的 `ExerciseMapper`，不要改。
-- 验收：答 3 题对 2 题，正确率显示 66.7%；答错的题能看到正确答案。
-
-**模块 3：错题本**
-
-- 新增：只显示答错的题，支持按课堂筛选，展示正确答案和选项。
-- 接口：`GET /api/answer/wrong?studentId=2&classroomId=1`。
-- 页面：`student/answer.html` 增加“错题本”标签页。
-- 文件：`AnswerController.java`、`AnswerMapper.java`、`student/answer.html`。
-- 验收：答错一题后错题本出现该题；答对后不出现。
-
-### 张宇轩（M5）：大屏 3 个模块
-
-**模块 1：实时统计大屏**
-
-- 保留现有：课堂口令、签到数、答题数、A/B/C/D 分布、3 秒轮询。
-- 要求：现有大屏不能坏。
-
-**模块 2：课堂排行榜**
-
-- 新增：签到速度前 5 名、答题正确数前 5 名（或正确率前 5 名）。
-- 接口：`GET /api/screen/rank?classroomId=1`，返回两个排行榜数组。
-- 页面：`screen/index.html` 增加排行榜区域，和统计区域轮播或按钮切换。
-- 文件：`ScreenController.java`、`screen/index.html`。
-- 验收：3 个学生签到/答题后，排行榜按时间和正确数排序正确。
-
-**模块 3：大屏显示设置**
-
-- 新增：全屏按钮、统计/排行榜/口令轮播（10 秒一换）、字号或深色/浅色切换；设置存 `localStorage`。
-- 文件：`screen/index.html`，不新增后端接口。
-- 验收：刷新页面后设置还在；轮播能自动切换。
-
-### 郭曦（M3）：报表 3 个模块
-
-**模块 1：CSV 导出**
-
-- 保留现有：按课堂导出六列 CSV，UTF-8 BOM，签到未答题也留一行。
-- 要求：现有导出不能坏。
-
-**模块 2：报表筛选与预览**
-
-- 新增：按课堂、学生账号/姓名、签到时间范围筛选；筛选结果先在页面表格预览，再导出。
-- 接口：`GET /api/report/list?classroomId=1&keyword=张三&start=2026-11-30&end=2026-12-06`，返回 JSON。
-- 页面：`report/index.html` 增加筛选表单和预览表格。
-- 文件：`ReportController.java`、`report/index.html`。
-- 验收：筛选后预览行数和导出 CSV 行数一致。
-
-**模块 3：统计图表**
-
-- 新增：签到率、答题正确率、A/B/C/D 分布，用纯 HTML/CSS 柱状图或进度条展示，不引入 ECharts/CDN。
-- 接口：`GET /api/report/summary?classroomId=1`，返回 `studentCount`、`checkinCount`、`answerCount`、`correctCount`、`optionCount`。
-- 页面：`report/index.html` 增加图表区域。
-- 文件：`ReportController.java`、`report/index.html`。
-- 验收：数据变化后图表跟着变；和数据库统计一致。
-
-## 三、时间安排
+### 2.1 时间表
 
 | 日期 | 任务 |
 | --- | --- |
-| 11/30 周一 | 每人完成模块 1 最小版，自己跑通，commit + push |
-| 12/01 周二 | 模块 1 联调修 bug，开始模块 2 |
-| 12/02 周三 | 模块 2 完成并 push，群里说一声 |
-| 12/03 周四 | 模块 2 联调，开始模块 3 |
-| 12/04 周五 | 模块 3 完成并 push |
-| 12/05 周六 | 每人自测 3 个模块，更新 `docs/API_CONTRACT.md` |
-| 12/06 周日 | 全组集成，按“建课→签到→发题→答题→大屏→报表”走一遍，准备演示 |
+| 11/30 周一 | 所有人 `git pull`，按“建课→签到→发题→答题→大屏→报表”跑一遍，记录 bug；开始做新增模块 |
+| 12/01 周二 | 修自己文件里的 bug；新增模块继续写 |
+| 12/02 周三 | 新增模块主体完成，自己用浏览器点一遍 |
+| 12/03 周四 | 新增模块自测；commit + push，群里说一声 |
+| 12/04 周五 | 全组联调：老师建课、学生签到、老师发题、学生答题、大屏、导出 |
+| 12/05 周六 | 修联调 bug；更新 `docs/API_CONTRACT.md` |
+| 12/06 周日 | 全流程彩排，准备下周继续做第二个新增模块 |
 
-## 四、共同规矩
+### 2.2 下周必须修的 bug
 
-1. 只改自己负责的文件，公共的 `common.js`、`common.css`、`index.html`、`register.html`、`AuthController` 不要动。
-2. 不新增数据库表；现有 5 张表够用。确实要加字段，先在群里说，不要自己改 `V1__init.sql`。
-3. 新接口统一返回 `Result`，字段小驼峰，前端用 `myFetch`，不要另写一套。
-4. 每个模块单独 commit，提交前先 `git pull`，只 `git add` 自己的文件。
-5. 三个模块都要有页面入口或按钮，不能只写接口。
-6. 现有主流程必须保持可用：建课、签到、发题、答题、大屏、导出，不能因为加模块坏掉。
-7. 12/06 集成时每人准备 2 分钟演示：自己的 3 个模块各点一下，说明数据从哪来。
+| 问题 | 现象 | 负责 | 改哪里 |
+| --- | --- | --- | --- |
+| 大屏可能显示错课堂 | 建了两个课时，`/screen/` 只读 localStorage，可能还是上一节课 | 陈嘉 + 张宇轩 | 陈嘉让“打开大屏”带 `?classroomId=当前id`；张宇轩让大屏优先读 URL，并显示课堂名/口令 |
+| 大屏只认加载时那一次课堂 id | 页面开着时切换课堂，大屏不会变 | 张宇轩 | `screen/index.html`：课堂 id 从 URL 读，没有 URL 再读 localStorage；页面上显示当前课堂 |
+| 答题页题干直接拼 HTML | 题干里如果有 `<` 等字符，页面会乱，存在 XSS | 刘子瑜 | `student/answer.html`：用 `escapeHtml()` 或 `textContent`，不要直接拼 `q.title` |
+| 答题按钮可重复点 | 网络慢时连点会发多次请求 | 刘子瑜 | `student/answer.html`：提交时禁用按钮，返回后恢复 |
+| 发题页和后台选项校验不一致 | 前端强制 4 个选项，后端允许 2–4 个 | 陈嘉 | 统一成“必须 4 个选项”，前端后端都按 4 个校验 |
+| 报表页初始化顺序乱 | 先读 localStorage 再加载课堂列表，偶尔选不中课堂 | 郭曦 | `report/index.html`：先 `loadClassrooms()`，再根据列表恢复上次课堂 |
+| 报表无数据时提示不清 | 空课堂导出只有表头，页面没有说明 | 郭曦 | `report/index.html`：预览为空时显示“该课堂暂无签到/答题数据” |
+| 签到页提示太素、重复签到不醒目 | 重复签到只有一行文字 | 于文博 | `student/join.html`：成功/失败用 `.notice`/`.notice-error`，重复签到明确提示 |
 
-## 五、验收清单
+> 只修自己文件里的 bug。公共文件（`common.js`、`common.css`、`index.html`、`register.html`、`AuthController`、`WebMvcConfig`、`application.yml`、`V1__init.sql`、`pom.xml`）本轮冻结，不要动；确实要改先在群里说。
 
-- [ ] 陈嘉：删除课堂会清理关联数据；题目可编辑/删除/复制。
-- [ ] 于文博：我的签到记录、签到次数、最近签到时间正确。
-- [ ] 刘子瑜：我的答题记录、正确率、错题本正确。
-- [ ] 张宇轩：排行榜排序正确；大屏轮播/全屏可用。
-- [ ] 郭曦：筛选预览和导出结果一致；图表数据正确。
-- [ ] 全组：建课→签到→发题→答题→大屏→导出完整跑通。
-- [ ] 每人正好 3 个模块，页面能演示，不超范围。
+### 2.3 下周每人具体任务
+
+| 成员 | 修 bug | 新增模块 | 下周交付 |
+| --- | --- | --- | --- |
+| 陈嘉 | 大屏链接带课堂 id；选项统一 4 个 | 题库管理 | 题库页能按课堂/关键词查题、复制题目到另一个课堂 |
+| 于文博 | 签到成功/失败/重复提示 | 我的签到记录 | 学生能看自己签过哪些课、签到时间 |
+| 刘子瑜 | 题干转义；提交防连点 | 我的答题记录/成绩 | 学生能看答过的题、对错、正确率 |
+| 张宇轩 | 大屏优先读 URL；显示当前课堂 | 排行榜 | 大屏能看签到速度前 5、答题正确数前 5 |
+| 郭曦 | 报表初始化顺序；空数据提示 | 报表筛选/预览 | 按课堂、账号/姓名、时间筛选，先预览再导出 |
+
+## 三、下周新增模块的最小要求
+
+### 陈嘉：题库管理
+
+- 范围：老师所有课堂的题目，不只是当前课堂；
+- 功能：
+  - 按课堂筛选、按题干关键词搜索；
+  - 勾选一道题，复制到另一个课堂；
+  - 题目列表展示题干、选项、答案（老师端可以看答案）。
+- 接口：
+  - `GET /api/exercise/bank?teacherId=1&classroomId=&keyword=`
+  - `POST /api/exercise/copy`，请求 `{ exerciseId, targetClassroomId }`
+- 文件：`teacher/publish.html`（加“题库管理”区域）、`ExerciseController.java`、`ExerciseMapper.java`。
+- 验收：A 课堂的题复制到 B 课堂，B 课堂能看到，答案不变。
+
+### 于文博：我的签到记录
+
+- 功能：学生查看自己签过哪些课、课堂名称、签到时间；按时间倒序。
+- 接口：`GET /api/checkin/my?studentId=2`。
+- 文件：`student/join.html`（加“我的签到记录”区域）、`CheckinController.java`、`CheckinMapper.java`；课堂名可以调用 M2 的 `ClassroomMapper`，不要改。
+- 验收：stu01 签两节课，记录里两节都在，时间正确；重复签到不新增记录。
+
+### 刘子瑜：我的答题记录/成绩
+
+- 功能：学生查看答过的题、自己的选择、正确答案、对错、总正确率。
+- 接口：`GET /api/answer/my?studentId=2`，返回题目、选项、选择、正确答案、是否正确。
+- 文件：`student/answer.html`（加“我的记录”标签/区域）、`AnswerController.java`、`AnswerMapper.java`；题目信息读 M2 的 `ExerciseMapper`，不要改。
+- 验收：答 3 题对 2 题，正确率显示 66.7%；答错的题能看到正确答案。
+
+### 张宇轩：排行榜
+
+- 功能：签到速度前 5 名（按 `create_time` 正序）、答题正确数前 5 名（按答对数倒序）。
+- 接口：`GET /api/screen/rank?classroomId=1`，返回两个数组。
+- 文件：`screen/index.html`（加排行榜区域/切换按钮）、`ScreenController.java`。
+- 验收：3 个学生签到/答题后，两个榜排序正确；大屏 3 秒刷新不影响排行榜。
+
+### 郭曦：报表筛选/预览
+
+- 功能：按课堂、学生账号/姓名、签到时间范围筛选；页面表格先预览，再导出当前筛选结果。
+- 接口：`GET /api/report/list?classroomId=1&keyword=&start=&end=`，返回 JSON 行。
+- 文件：`report/index.html`、`ReportController.java`。
+- 验收：筛选后预览行数和导出 CSV 行数一致；空结果有提示。
+
+## 四、后两周安排
+
+### 第 2 周（12/07 – 12/13）：补齐第二个新增模块
+
+| 成员 | 第二个新增模块 |
+| --- | --- |
+| 于文博 | 签到统计（总次数、最近签到） |
+| 刘子瑜 | 错题本 |
+| 张宇轩 | 大屏显示设置（全屏、轮播、主题） |
+| 郭曦 | 统计图表（签到率、正确率、选项分布） |
+| 陈嘉 | 不新增模块，负责题库模块联调和全组回归测试 |
+
+12/13 之前，每人 3 个模块必须全部 push。
+
+### 第 3 周（12/14 – 12/20）：只修 bug、联调、答辩
+
+- 12/14 – 12/16：全流程回归，修 P0/P1 bug；
+- 12/17 – 12/18：补边界情况、空数据、错误提示；
+- 12/19：演示彩排，准备 5 分钟讲稿；
+- 12/20：提交/答辩。
+
+第 3 周不再加新功能，避免越改越乱。
+
+## 五、文件范围（只改自己的）
+
+| 成员 | 前端可改 | 后端可改/新建 | 只读，不要改 |
+| --- | --- | --- | --- |
+| 陈嘉 | `teacher/home.html`、`teacher/publish.html` | `ClassroomController`、`ExerciseController`、`Classroom`、`Exercise`、`ClassroomMapper`、`ExerciseMapper` | `AnswerMapper`、`CheckinMapper`、`UserMapper` |
+| 于文博 | `student/join.html` | `CheckinController`、`Checkin`、`CheckinMapper` | `ClassroomMapper`、`UserMapper` |
+| 刘子瑜 | `student/answer.html` | `AnswerController`、`Answer`、`AnswerMapper` | `ExerciseMapper`、`UserMapper` |
+| 张宇轩 | `screen/index.html` | `ScreenController` | `CheckinMapper`、`AnswerMapper`、`ExerciseMapper`、`ClassroomMapper`、`UserMapper` |
+| 郭曦 | `report/index.html` | `ReportController` | 不要改别人的 Controller/Entity/Mapper，报表直接用 JdbcTemplate 查 |
+
+公共文件本轮冻结：`common.js`、`common.css`、`index.html`、`register.html`、`AuthController`、`WebMvcConfig`、`application.yml`、`V1__init.sql`、`pom.xml`。
+
+## 六、开发标准
+
+1. **不新增表、不改表结构**。现有 `user`、`classroom`、`checkin`、`exercise`、`answer` 五张表够用。
+2. 新接口统一返回 `{ code, msg, data }`，成功 `code = 200`；字段一律小驼峰。
+3. 前端请求统一用 `myFetch`，不要自己另写一套 token 处理。
+4. 时间统一 `yyyy-MM-dd HH:mm:ss`；Java 用 `LocalDateTime` 时加 `@JsonFormat`。
+5. id 一律传数字，不要传字符串；学生题目列表不能返回 `answer`。
+6. 页面必须有登录校验和导航，不能只写一个裸接口。
+7. 题干、课程名、学生名展示前要转义，不能直接拼 HTML。
+8. 每个模块单独 commit，提交前先 `git pull`，只 `git add` 自己的文件，不要 `git add .`。
+9. commit 信息格式：`feat: M1 我的签到记录`、`fix: M4 答题页转义`。
+10. 不引入 Vue、Node、Redis、WebSocket、ECharts CDN；保持原生 HTML/CSS/JS + Spring Boot。
+11. 改接口字段先改 `docs/API_CONTRACT.md`，并在群里说，谁改字段谁请奶茶。
+12. 每次提交前本地跑通：`mvn clean package`，老师/学生登录，走一遍自己的模块。
+
+## 七、下周验收清单
+
+- [ ] 现有主流程还能跑：建课 → 签到 → 发题 → 答题 → 大屏 → 导出。
+- [ ] 大屏打开时能明确显示是哪节课，不再串课。
+- [ ] 答题页题干不会把页面搞乱，提交按钮不能连点。
+- [ ] 发题页和后台都按 4 个选项校验。
+- [ ] 报表页先加载课堂列表，空数据有提示。
+- [ ] 每人完成 1 个新增模块，并 push。
+- [ ] 每人知道自己还差几个模块，12/13 前交满 3 个。
+- [ ] 没有改公共文件，没有新增表。
